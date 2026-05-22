@@ -1,5 +1,5 @@
 	{ Potions for the quaffing				-RAK-	}
-[psect(misc2$code)] procedure quaff;
+procedure quaff;
       var
 		i1				: unsigned;
 		i2,i3,i4,i5,item_val		: integer;
@@ -261,7 +261,7 @@
 	  60 :	;
 	  61 :	;
 	  62 :	;
-	  otherwise ;
+	  else ;
 	end;
 	{ End of Potions...					}
 			end;

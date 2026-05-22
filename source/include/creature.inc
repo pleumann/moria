@@ -27,13 +27,13 @@
 			      begin
 				if (py.flags.see_inv) then
 				  flag := true
-				else if (uand(%X'10000',cmove) = 0) then
+				else if (uand($10000,cmove) = 0) then
 				  flag := true;
 			      end
 	{ Infra vision...       }
 			    else if (py.flags.see_infra > 0) then
 			      if (cdis <= py.flags.see_infra) then
-				if (uand(%X'2000',cdefense) <> 0) then
+				if (uand($2000,cdefense) <> 0) then
 				  flag := true;
 			  end;
 	{ Light it up...        }
@@ -252,7 +252,7 @@
 	    with c_list[mptr] do
 	      begin
 		attstr := damage;
-		if ((uand(%X'10000',cmove) <> 0) and
+		if ((uand($10000,cmove) <> 0) and
 		    (not(py.flags.see_inv)))then
 		  cdesc := 'It '
 		else if (py.flags.blind > 0) then
@@ -262,7 +262,7 @@
 		else
 		  cdesc := 'The ' + name + ' ';
 		{ For 'DIED_FROM' string        }
-		if (uand(%X'80000000',cmove) <> 0) then
+		if (uand($80000000,cmove) <> 0) then
 		  ddesc := 'The ' + name
 		else
 		  ddesc := '& ' + name;
@@ -283,10 +283,10 @@
 			attx := attstr;
 			attstr := '';
 		      end;
-		    readv(attx,atype,adesc,damstr);
+		    ReadStr(attx,atype,adesc,damstr);
 		    flag := false;
 		    if (py.flags.protevil > 0) then
-		      if (uand(cdefense,%X'0004') <> 0) then
+		      if (uand(cdefense,$0004) <> 0) then
 			if ((py.misc.lev+1) > level) then
 			  begin
 			    atype := 99;
@@ -344,7 +344,7 @@
 {Eat charges       }  24 :      if (test_hit(15,level,0,pac+ptoac)) then
 				  flag := true;
 		      99 :      flag := true;
-		      otherwise ;
+		      else ;
 		    end;
 		    if (flag) then
 		      begin
@@ -379,7 +379,7 @@
 				9 : msg_print(cdesc + 'moons you!!!');
 			      end;
 			 99 : msg_print(cdesc + 'is repelled.');
-			  otherwise ;
+			  else ;
 			end;
 			case atype of
 {Normal attack  }         1  :  begin
@@ -583,7 +583,7 @@
 {Lose experience  }       19:   begin
 				msg_print('You feel your life draining away!');
 				  i1:=damroll(damstr)+
-					(py.misc.exp div 100)*mon$drain_life;
+					(py.misc.exp div 100)*mon_drain_life;
 				  lose_exp(i1);
 				end;
 {Aggravate monster}       20:   aggravate_monster(5);
@@ -648,13 +648,13 @@
 					  end;
 				  end;
 			  99:   ;
-			  otherwise ;
+			  else ;
 			end
 		      end
 		    else
 		      case adesc of
 			  1,2,3,6  : msg_print(cdesc + 'misses you.');
-			  otherwise ;
+			  else ;
 		      end
 		  end
 	      end
@@ -685,13 +685,13 @@
 		    if (fopen) then
 		      tflag := true
 		{ Creature moves through walls? }
-		    else if (uand(movebits,%X'40000') <> 0) then
+		    else if (uand(movebits,$40000) <> 0) then
 		      tflag := true
 		{ Creature can open doors?      }
 		    else if (tptr > 0) then
 	with t_list[tptr] do
 	  with m_list[monptr] do
-	    if (uand(movebits,%X'20000') <> 0) then
+	    if (uand(movebits,$20000) <> 0) then
 	      begin     { Creature can open doors...                    }
 		case tval of
 		  105 : begin   { Closed doors...       }
@@ -729,7 +729,7 @@
 				tflag := false;
 			      end;
 			end;
-		  otherwise ;
+		  else ;
 		end;
 	      end
 	    else
@@ -752,7 +752,7 @@
 			    end
 			end;
 		  109 : ;       { Secret doors...       }
-		  otherwise ;
+		  else ;
 		end;
 	      end;
 		{ Glyph of warding present?     }
@@ -761,7 +761,7 @@
 			if (t_list[tptr].tval = 102) then
 			  if (t_list[tptr].subval = 99) then
 			    begin
-			      if (randint(obj$rune_prot) < c_list[m_list[monptr].mptr].level) then
+			      if (randint(obj_rune_prot) < c_list[m_list[monptr].mptr].level) then
 				begin
 				  if ((newy=char_row) and (newx=char_col)) then
 				    msg_print('The rune of protection is broken!');
@@ -791,7 +791,7 @@
 				  msg_print('Your hands stop glowing.');
 				  py.flags.confuse_monster := false;
 				  if ((randint(max_mons_level) < level) or
-				      (uand(%X'1000',cdefense) <> 0)) then
+				      (uand($1000,cdefense) <> 0)) then
 				    begin
 		msg_print('The ' + name + ' is unaffected.');
 				    end
@@ -810,7 +810,7 @@
 			 (newx <> m_list[monptr].fx))) then
 			begin
 		{ Creature eats other creatures?        }
-			  if (uand(movebits,%X'80000') <> 0) then
+			  if (uand(movebits,$80000) <> 0) then
 			    delete_monster(cptr)
 			  else
 			    tflag := false;
@@ -820,7 +820,7 @@
 		      with m_list[monptr] do
 			begin
 		{ Pick up or eat an object              }
-			  if (uand(movebits,%X'100000') <> 0) then
+			  if (uand(movebits,$100000) <> 0) then
 			    with cave[newy,newx] do
 			      if (tptr > 0) then
 				if (t_list[tptr].tval < 100) then
@@ -856,7 +856,7 @@
 	    with m_list[monptr] do
 	      with c_list[mptr] do
 		begin
-		  chance := int(uand(spells,%X'0000000F'));
+		  chance := int(uand(spells,$0000000F));
 		{ 1 in x chance of casting spell                }
 		  if (randint(chance) <> 1) then
 		    begin
@@ -883,7 +883,7 @@
 		      flag := true;
 		      if (not(ml)) then
 			flag := false
-		      else if ((uand(%X'10000',c_list[mptr].cmove) <> 0) and
+		      else if ((uand($10000,c_list[mptr].cmove) <> 0) and
 			  (not(py.flags.see_inv))) then
 			flag := false
 		      else if (py.flags.blind > 0) then
@@ -893,7 +893,7 @@
 		      else
 			cdesc := 'It ';
 		      { For 'DIED_FROM' string  }
-		      if (uand(%X'80000000',cmove) <> 0) then
+		      if (uand($80000000,cmove) <> 0) then
 			ddesc := 'The ' + name
 		      else
 			ddesc := '& ' + name;
@@ -902,7 +902,7 @@
 		      objdes(ddesc,inven_max,true);
 		{ End DIED_FROM                 }
 		{ Extract all possible spells into spell_choice }
-		      i1 := uand(spells,%X'FFFFFFF0');
+		      i1 := uand(spells,$FFFFFFF0);
 		      i3 := 0;
 		      while (i1 <> 0) do
 			begin
@@ -1047,7 +1047,7 @@
 			  msg_print(cdesc);
 			  breath(5,char_row,char_col,trunc(hp/3.0),ddesc);
 			end;
-		otherwise begin
+		else begin
 			    msg_print('Creature cast unknown spell.');
 			    cdesc := '';
 			  end;
@@ -1064,7 +1064,7 @@
 	  with c_list[m_list[monptr].mptr] do
 	    begin
 		{ Does the critter multiply?                            }
-	      if (uand(cmove,%X'00200000') <> 0) then
+	      if (uand(cmove,$00200000) <> 0) then
 		if (max_mon_mult >= mon_tot_mult) then
 		  if ((py.flags.rest mod mon_mult_adj) = 0) then
 		    with m_list[monptr] do
@@ -1100,7 +1100,7 @@
 		begin
 		{ 75% random movement                                   }
 		  if ((randint(100) < 75) and
-		    (uand(cmove,%X'00000020') <> 0)) then
+		    (uand(cmove,$00000020) <> 0)) then
 		    begin
 		      mm[1] := randint(9);
 		      mm[2] := randint(9);
@@ -1111,7 +1111,7 @@
 		    end
 		{ 40% random movement                                   }
 		  else if ((randint(100) < 40) and
-		    (uand(cmove,%X'00000010') <> 0))  then
+		    (uand(cmove,$00000010) <> 0))  then
 		    begin
 		      mm[1] := randint(9);
 		      mm[2] := randint(9);
@@ -1122,7 +1122,7 @@
 		    end
 		{ 20% random movement                                   }
 		  else if ((randint(100) < 20) and
-		    (uand(cmove,%X'00000008') <> 0))  then
+		    (uand(cmove,$00000008) <> 0))  then
 		    begin
 		      mm[1] := randint(9);
 		      mm[2] := randint(9);
@@ -1132,7 +1132,7 @@
 		      mon_move := make_move(monptr,mm);
 		    end
 		{ Normal movement                                       }
-		  else if (uand(cmove,%X'00000002') <> 0) then
+		  else if (uand(cmove,$00000002) <> 0) then
 		    begin
 		      if (randint(200) = 1) then
 			begin
@@ -1147,7 +1147,7 @@
 		      mon_move := make_move(monptr,mm);
 		    end
 		{ Attack, but don't move                                }
-		  else if (uand(cmove,%X'00000001') <> 0) then
+		  else if (uand(cmove,$00000001) <> 0) then
 		    if (m_list[monptr].cdis < 2) then
 		      begin
 			get_moves(monptr,mm);

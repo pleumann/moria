@@ -1,5 +1,5 @@
 	{ Use date and time to produce random seed		-RAK-	}
-[psect(setup$code)] function get_seed : unsigned;
+function get_seed : unsigned;
     type
 	$quad = [quad,unsafe] record
 		l0      : unsigned;
@@ -9,22 +9,22 @@
 	time            : $quad;
 	seed_val        : unsigned;
 
-    [asynchronous,external (SYS$GETTIM)] function get_time(
+    function get_time(
 		var time : $quad) : integer;
 		external;
 
     begin
       get_time(time);                           { Current time  }
       seed_val := uor(time.l0,time.l1);         { Random number }
-      get_seed := uor(seed_val,%X'00000001');   { Odd number    }
+      get_seed := uor(seed_val,$00000001);   { Odd number    }
     end;
 
 
 	{ Returns the day number; 1=Sunday...7=Saturday 	-RAK-	}
-[psect(setup$code)] function day_num : integer;
+function day_num : integer;
     var
 	i1              : integer;
-    [external(LIB$DAY)] function day(
+    function day(
 	var daynum              : integer;
 	dum1                    : integer := %immed 0;
 	dum2                    : integer := %immed 0) : integer;
@@ -36,24 +36,24 @@
 
 
 	{ Returns the hour number; 0=midnight...23=11 PM	-RAK-	}
-[psect(setup$code)] function hour_num : integer;
+function hour_num : integer;
     var
 	hour            : integer;
 	time_str        : packed array [1..11] of char;
     begin
       time(time_str);
-      readv(substr(time_str,1,2),hour);
+      ReadStr(substr(time_str,1,2),hour);
       hour_num := hour;
     end;
 
 
 	{ Check the day-time strings to see if open		-RAK-	}
-[psect(setup$code)] function check_time : boolean;
+function check_time : boolean;
     begin
       case days[day_num,(hour_num+5)] of
 	'.'  :  check_time := false;    { Closed                }
 	'X'  :  check_time := true;     { Normal hours          }
-	otherwise check_time := false;  { Other, assumed closed }
+	else check_time := false;  { Other, assumed closed }
       end;
     end;
 
@@ -72,7 +72,7 @@
 
 
 	{ Generates a random integer number of NORMAL distribution -RAK-}
-[psect(misc1$code)] function randnor(mean,stand : integer) : integer;
+function randnor(mean,stand : integer) : integer;
     begin
       randnor :=  trunc(sqrt(-2.0*ln(randint(9999999)/10000000.0))*
 		  cos(6.283*(randint(9999999)/10000000.0))*stand) + mean;
@@ -87,7 +87,7 @@
 
 
 	{ Checks a co-ordinate for in bounds status		-RAK-	}
-[psect(misc1$code)] function in_bounds(y,x : integer) : boolean;
+function in_bounds(y,x : integer) : boolean;
     begin
       if ((y > 1) and (y < cur_height) and
 	  (x > 1) and (x < cur_width)) then
@@ -108,7 +108,7 @@
 
 
 	{ Checks points north, south, east, and west for a type -RAK-	}
-[psect(misc1$code)] function next_to4   (
+function next_to4   (
 			y,x             :       integer;
 			group_set       : obj_set
 					) : integer;
@@ -133,7 +133,7 @@
 
 
 	{ Checks all adjacent spots for elements		-RAK-	}
-[psect(misc1$code)] function next_to8   (
+function next_to8   (
 			y,x             :       integer;
 			group_set       :       obj_set
 					) : integer;
@@ -151,7 +151,7 @@
 
 
 	{ Link all free space in treasure list together 		}
-[psect(generate$code)] procedure tlink;
+procedure tlink;
       var
 	i1              : integer;
       begin
@@ -165,7 +165,7 @@
 
 
 	{ Link all free space in monster list together			}
-[psect(generate$code)] procedure mlink;
+procedure mlink;
       var
 	i1              : integer;
       begin
@@ -181,7 +181,7 @@
 
 
 	{ Initializes M_LEVEL array for use with PLACE_MONSTER	-RAK-	}
-[psect(setup$code)] procedure init_m_level;
+procedure init_m_level;
     var
 	i1,i2,i3                : integer;
     begin
@@ -203,7 +203,7 @@
 
 
 	{ Initializes T_LEVEL array for use with PLACE_OBJECT	-RAK-	}
-[psect(setup$code)] procedure init_t_level;
+procedure init_t_level;
     var
 	i1,i2                   : integer;
     begin
@@ -238,7 +238,7 @@
 
 	{ Converts input string into a dice roll		-RAK-	}
 	{       Normal input string will look like '2d6', '3d8'... ect. }
-[psect(misc1$code)] function damroll(dice : dtype) : integer;
+function damroll(dice : dtype) : integer;
     var
 	i1,num,sides                    : integer;
     begin
@@ -247,13 +247,13 @@
 	  dice[i1] := ' ';
       num := 0;
       sides := 0;
-      readv(dice,num,sides,error:=continue);
+      ReadStr(dice,num,sides);
       damroll := rand_rep(num,sides);
     end;
 
 
 	{ Returns true if no obstructions between two given points -RAK-}
-[psect(misc1$code)] function los(y1,x1,y2,x2 : integer) : boolean;
+function los(y1,x1,y2,x2 : integer) : boolean;
     var
 	ty,tx,stepy,stepx,p1,p2         : integer;
 	slp,tmp                         : real;
@@ -314,7 +314,7 @@
 
 
 	{ Returns symbol for given row, column			-RAK-	}
-[psect(misc5$code)] procedure loc_symbol(y,x : integer; var sym : char);
+procedure loc_symbol(y,x : integer; var sym : char);
     begin
       with cave[y,x] do
 	if ((cptr = 1) and (not(find_flag))) then
@@ -327,7 +327,7 @@
 	      begin
 		with m_list[cptr] do
 		  if ((ml) and
-		      ((uand(c_list[mptr].cmove,%X'00010000') = 0) or
+		      ((uand(c_list[mptr].cmove,$00010000) = 0) or
 		       (py.flags.see_inv))) then
 		    sym := c_list[mptr].cchar
 		  else if (tptr > 0) then
@@ -348,7 +348,7 @@
 
 
 	{ Tests a spot for light or field mark status		-RAK-	}
-[psect(misc1$code)] function test_light(y,x : integer) : boolean;
+function test_light(y,x : integer) : boolean;
     begin
       with cave[y,x] do
 	if ((pl) or (fm) or (tl)) then
@@ -359,7 +359,7 @@
 
 
 	{ Prints the map of the dungeon 			-RAK-	}
-[psect(misc2$code)] procedure prt_map;
+procedure prt_map;
     var
 	i1,i2,i3,i4,i5  : integer;
 	ypos,xpos,isp   : integer;
@@ -436,7 +436,7 @@
 
 
 	{ Compact monsters					-RAK-	}
-[psect(misc2$code)] procedure compact_monsters;
+procedure compact_monsters;
     var
 	i1,i2,i3,ctr,cur_dis            : integer;
 	delete_1,delete_any             : boolean;
@@ -475,7 +475,7 @@
 
 
 	{ Returns a pointer to next free space			-RAK-	}
-[psect(misc3$code)] procedure popm(var x : integer);
+procedure popm(var x : integer);
     begin
       if (mfptr < 1) then compact_monsters;
       x := mfptr;
@@ -484,7 +484,7 @@
 
 
 	{ Pushs a record back onto free space list		-RAK-	}
-[psect(misc3$code)] procedure pushm(x : integer);
+procedure pushm(x : integer);
     begin
       m_list[x] := blank_monster;
       m_list[x].nptr := mfptr;
@@ -493,20 +493,20 @@
 
 
 	{ Gives Max hit points					-RAK-	}
-[psect(misc3$code)] function max_hp(hp_str : dtype) : integer;
+function max_hp(hp_str : dtype) : integer;
     var
 	i1,num,die              : integer;
     begin
       for i1 := 1 to length(hp_str) do
 	if (hp_str[i1] = 'd') then
 	  hp_str[i1] := ' ';
-      readv(hp_str,num,die);
+      ReadStr(hp_str,num,die);
       max_hp := num*die;
     end;
 
 
 	{ Places a monster at given location			-RAK-	}
-[psect(misc3$code)] procedure place_monster(y,x,z : integer; slp : boolean);
+procedure place_monster(y,x,z : integer; slp : boolean);
     var
 	i1,cur_pos              : integer;
     begin
@@ -518,7 +518,7 @@
 	  mptr := z;
 	  nptr := muptr;
 	  muptr := cur_pos;
-	  if (uand(c_list[z].cdefense,%X'4000') <> 0) then
+	  if (uand(c_list[z].cdefense,$4000) <> 0) then
 	    hp := max_hp(c_list[z].hd)
 	  else
 	    hp := damroll(c_list[z].hd);
@@ -537,7 +537,7 @@
 
 
 	{ Places a monster at given location			-RAK-	}
-[psect(misc3$code)] procedure place_win_monster;
+procedure place_win_monster;
     var
 	cur_pos                 : integer;
 	y,x                     : integer;
@@ -560,7 +560,7 @@
 				m_level[max_mons_level] + m_level[0];
 	      nptr := muptr;
 	      muptr := cur_pos;
-	      if (uand(c_list[mptr].cdefense,%X'4000') <> 0) then
+	      if (uand(c_list[mptr].cdefense,$4000) <> 0) then
 		hp := max_hp(c_list[mptr].hd)
 	      else
 		hp := damroll(c_list[mptr].hd);
@@ -575,7 +575,7 @@
 
 
 	{ Allocates a random monster				-RAK-	}
-[psect(misc3$code)] procedure alloc_monster(alloc_set : obj_set;
+procedure alloc_monster(alloc_set : obj_set;
 			  num,dis : integer;
 			  slp : boolean         );
     var
@@ -609,7 +609,7 @@
 
 
 	{ Places creature adjacent to given location		-RAK-	}
-[psect(misc3$code)] function summon_monster(
+function summon_monster(
 				var y,x :       integer;
 				slp     :       boolean
 					) : boolean;
@@ -617,7 +617,7 @@
 	i1,i2,i3,i4,i5          : integer;
     begin
       i1 := 0;
-      i5 := dun_level + mon$summon_adj;
+      i5 := dun_level + mon_summon_adj;
       summon_monster := false;
       if (i5 > max_mons_level) then
 	i4 := max_mons_level
@@ -648,7 +648,7 @@
 
 
 	{ Places undead adjacent to given location		-RAK-	}
-[psect(misc3$code)] function summon_undead(var y,x : integer) : boolean;
+function summon_undead(var y,x : integer) : boolean;
     var
 	i1,i2,i3,i4,i5,ctr      : integer;
     begin
@@ -659,7 +659,7 @@
 	i5 := randint(i4);
 	ctr := 0;
 	repeat
-	  if (uand(c_list[i5].cdefense,%X'0008') <> 0) then
+	  if (uand(c_list[i5].cdefense,$0008) <> 0) then
 	    begin
 	      ctr := 20;
 	      i4  := 0;
@@ -694,7 +694,7 @@
 
 
 	{ If too many objects on floor level, delete some of them-RAK-	}
-[psect(misc2$code)] procedure compact_objects;
+procedure compact_objects;
     var
 	i1,i2,ctr,cur_dis               : integer;
 	flag                            : boolean;
@@ -718,7 +718,7 @@
 			103     : flag := true;
 			104,105 : if (randint(4) = 1) then flag := true;
 			107,108 : ;
-			otherwise if (randint(8) = 1) then flag := true;
+			else if (randint(8) = 1) then flag := true;
 		      end;
 		    if (flag) then
 		      begin
@@ -737,7 +737,7 @@
 
 
 	{ Gives pointer to next free space			-RAK-	}
-[psect(misc4$code)] procedure popt(var x : integer);
+procedure popt(var x : integer);
     var
 	i1                      : integer;
     begin
@@ -748,7 +748,7 @@
 
 
 	{ Pushs a record back onto free space list		-RAK-	}
-[psect(misc4$code)] procedure pusht(x : integer);
+procedure pusht(x : integer);
     begin
       t_list[x] := blank_treasure;
       t_list[x].p1 := tcptr;
@@ -757,7 +757,7 @@
 
 
 	{ Order the treasure list by level			-RAK-	}
-[psect(setup$code)] procedure sort_objects;
+procedure sort_objects;
     var
 	i1,i2,i3,gap            : integer;
 	tmp                     : treasure_type;
@@ -790,7 +790,7 @@
 
 	{ Chance of treasure having magic abilities		-RAK-	}
 	{ Chance increases with each dungeon level                      }
-[psect(misc4$code)] procedure magic_treasure(x,level : integer);
+procedure magic_treasure(x,level : integer);
     var
 	chance,special,cursed,i1        : integer;
 
@@ -832,28 +832,28 @@
 			if (magik(special)) then
 			  case randint(9) of
 			1     : begin
-				  flags := uor(flags,%X'02380000');
+				  flags := uor(flags,$02380000);
 				  name := name + ' (R)';
 				  toac := toac + 5;
 				  cost := cost + 2500;
 				end;
 			2     : begin   { Resist Acid   }
-				  flags := uor(flags,%X'00100000');
+				  flags := uor(flags,$00100000);
 				  name := name + ' (RA)';
 				  cost := cost + 1000;
 				end;
 			3,4   : begin   { Resist Fire   }
-				  flags := uor(flags,%X'00080000');
+				  flags := uor(flags,$00080000);
 				  name := name + ' (RF)';
 				  cost := cost + 600;
 				end;
 			5,6   : begin   { Resist Cold   }
-				  flags := uor(flags,%X'00200000');
+				  flags := uor(flags,$00200000);
 				  name := name + ' (RC)';
 				  cost := cost + 600;
 				end;
 			7,8,9 : begin   { Resist Lightning}
-				  flags := uor(flags,%X'02000000');
+				  flags := uor(flags,$02000000);
 				  name := name + ' (RL)';
 				  cost := cost + 500;
 				end;
@@ -863,7 +863,7 @@
 		      begin
 			toac := -m_bonus(1,40,level);
 			cost := 0;
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 		      end
 		  end;
 	21,22,23: begin { Weapons       }
@@ -874,7 +874,7 @@
 			if (magik(special)) then
 			  case randint(16) of
 		1             : begin   { Holy Avenger  }
-				  flags := uor(flags,%X'01418001');
+				  flags := uor(flags,$01418001);
 				  tohit := tohit + 5;
 				  todam := todam + 5;
 				  toac  := randint(4);
@@ -884,7 +884,7 @@
 				  cost  := cost + 10000;
 				end;
 		2             : begin   { Defender      }
-				  flags := uor(flags,%X'07B80900');
+				  flags := uor(flags,$07B80900);
 				  tohit := tohit + 3;
 				  todam := todam + 3;
 				  toac  := 5 + randint(5);
@@ -894,42 +894,42 @@
 				  cost  := cost + 7500;
 				end;
 		3,4           : begin   { Slay Monster  }
-				  flags := uor(flags,%X'01004000');
+				  flags := uor(flags,$01004000);
 				  tohit := tohit + 3;
 				  todam := todam + 3;
 				  name := name + ' (SM)';
 				  cost := cost + 5000;
 				end;
 		5,6           : begin   { Slay Dragon   }
-				  flags := uor(flags,%X'00002000');
+				  flags := uor(flags,$00002000);
 				  tohit := tohit + 3;
 				  todam := todam + 3;
 				  name := name + ' (SD)';
 				  cost := cost + 4000;
 				end;
 		7,8           : begin   { Slay Evil     }
-				  flags := uor(flags,%X'00008000');
+				  flags := uor(flags,$00008000);
 				  tohit := tohit + 3;
 				  todam := todam + 3;
 				  name := name + ' (SE)';
 				  cost := cost + 4000;
 				end;
 		9,10          : begin   { Slay Undead   }
-				  flags := uor(flags,%X'00010000');
+				  flags := uor(flags,$00010000);
 				  tohit := tohit + 2;
 				  todam := todam + 2;
 				  name := name + ' (SU)';
 				  cost := cost + 3000;
 				end;
 		11,12,13      : begin   { Flame Tongue  }
-				  flags := uor(flags,%X'00040000');
+				  flags := uor(flags,$00040000);
 				  tohit := tohit + 1;
 				  todam := todam + 3;
 				  name := name + ' (FT)';
 				  cost := cost + 2000;
 				end;
 		14,15,16      : begin   { Frost Brand   }
-				  flags := uor(flags,%X'00020000');
+				  flags := uor(flags,$00020000);
 				  tohit := tohit + 1;
 				  todam := todam + 1;
 				  name := name + ' (FB)';
@@ -941,7 +941,7 @@
 		      begin
 			tohit := -m_bonus(1,55,level);
 			todam := -m_bonus(1,55,level);
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 			cost := 0;
 		      end
 		  end;
@@ -951,7 +951,7 @@
 		    else if (magik(cursed)) then
 		      begin
 			tohit := -m_bonus(1,50,level);
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 			cost := 0;
 		      end;
 		  end;
@@ -965,7 +965,7 @@
 			3 : begin
 			      p1 := -m_bonus(1,30,level);
 			      cost := 0;
-			      flags := uor(%X'80000000',flags);
+			      flags := uor($80000000,flags);
 			    end;
 		      end;
 		  end;
@@ -976,7 +976,7 @@
 			if (magik(special)) then
 			  case randint(2) of
 			    1  :begin
-				  flags := uor(%X'00800000',flags);
+				  flags := uor($00800000,flags);
 				  name := name + ' of Free Action';
 				  cost := cost + 1000;
 				end;
@@ -993,19 +993,19 @@
 			if (magik(special)) then
 			  case randint(2) of
 			    1 : begin
-				  flags := uor(%X'80000002',flags);
+				  flags := uor($80000002,flags);
 				  name := name + ' of Clumsiness';
 				  p1 := 1;
 				end;
 			    2 : begin
-				  flags := uor(%X'80000001',flags);
+				  flags := uor($80000001,flags);
 				  name := name + ' of Weakness';
 				  p1 := 1;
 				end;
 			  end;
 			toac := -m_bonus(1,40,level);
 			p1   := -m_bonus(1,10,level);
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 			cost := 0;
 		      end
 		  end;
@@ -1016,18 +1016,18 @@
 			if (magik(special)) then
 			  case randint(12) of
 			    1 : begin
-				  flags := uor(%X'00001000',flags);
+				  flags := uor($00001000,flags);
 				  name := name + ' of Speed';
 				  p1 := 1;
 				  cost := cost + 5000;
 				end;
 		      2,3,4,5 : begin
-				  flags := uor(%X'00000100',flags);
+				  flags := uor($00000100,flags);
 				  name := name + ' of Stealth';
 				  cost := cost + 500;
 				end;
-		      otherwise begin
-				  flags := uor(%X'04000000',flags);
+		      else begin
+				  flags := uor($04000000,flags);
 				  name := name + ' of Slow descent';
 				  cost := cost + 250;
 				end
@@ -1037,16 +1037,16 @@
 		      begin
 			case randint(3) of
 			  1 : begin
-				flags := uor(%X'80001000',flags);
+				flags := uor($80001000,flags);
 				name := name + ' of Slowness';
 				p1 := -1;
 			      end;
 			  2 : begin
-				flags := uor(%X'80000200',flags);
+				flags := uor($80000200,flags);
 				name := name + ' of Noise';
 			      end;
 			  3 : begin
-				flags := uor(%X'80000000',flags);
+				flags := uor($80000000,flags);
 				name := name + ' of Great Mass';
 				weight := weight*5;
 			      end;
@@ -1064,19 +1064,19 @@
 		1,2,3,4,5  :  case randint(3) of
 				1 : begin
 				      p1 := randint(2);
-				      flags := uor(%X'00000008',flags);
+				      flags := uor($00000008,flags);
 				      name := name + ' of Intelligence';
 				      cost := cost + p1*500;
 				    end;
 				2 : begin
 				      p1 := randint(2);
-				      flags := uor(%X'00000010',flags);
+				      flags := uor($00000010,flags);
 				      name := name + ' of Wisdom';
 				      cost := cost + p1*500;
 				    end;
 				3 : begin
 				      p1 := 1 + randint(4);
-				      flags := uor(%X'40000000',flags);
+				      flags := uor($40000000,flags);
 				      name := name + ' of Infra-Vision';
 				      cost := cost + p1*250;
 				    end;
@@ -1084,36 +1084,36 @@
 		6,7,8      :  case randint(6) of
 				1 : begin
 				      p1 := randint(3);
-				      flags := uor(%X'00800007',flags);
+				      flags := uor($00800007,flags);
 				      name := name + ' of Might';
 				      cost := cost + 1000 + p1*500;
 				    end;
 				2 : begin
 				      p1 := randint(3);
-				      flags := uor(%X'00000030',flags);
+				      flags := uor($00000030,flags);
 				      name := name + ' of Lordliness';
 				      cost := cost + 1000 + p1*500;
 				    end;
 				3 : begin
 				      p1 := randint(3);
-				      flags := uor(%X'01380008',flags);
+				      flags := uor($01380008,flags);
 				      name := name + ' of the Magi';
 				      cost := cost + 3000 + p1*500;
 				    end;
 				4 : begin
 				      p1 := randint(3);
-				      flags := uor(%X'00000020',flags);
+				      flags := uor($00000020,flags);
 				      name := name + ' of Beauty';
 				      cost := cost + 750;
 				    end;
 				5 : begin
 				      p1 := 1 + randint(4);
-				      flags := uor(%X'01000040',flags);
+				      flags := uor($01000040,flags);
 				      name := name + ' of Seeing';
 				      cost := cost + 1000 + p1*100;
 				    end;
 				6 : begin
-				      flags := uor(%X'00000800',flags);
+				      flags := uor($00000800,flags);
 				      name := name + ' of Regeneration';
 				      cost := cost + 1500;
 				    end;
@@ -1123,40 +1123,40 @@
 		    else if (magik(cursed)) then
 		      begin
 			toac := -m_bonus(1,45,level);
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 			cost := 0;
 			if (magik(special)) then
 			  case randint(7) of
 			    1 : begin
 				  p1 := -1;
-				  flags := uor(%X'00000008',flags);
+				  flags := uor($00000008,flags);
 				  name := name + ' of Stupidity';
 				end;
 			    2 : begin
 				  p1 := -1;
-				  flags := uor(%X'00000010',flags);
+				  flags := uor($00000010,flags);
 				  name := name + ' of Dullness';
 				end;
 			    3 : begin
-				  flags := uor(%X'08000000',flags);
+				  flags := uor($08000000,flags);
 				  name := name + ' of Blindness';
 				end;
 			    4 : begin
-				  flags := uor(%X'10000000',flags);
+				  flags := uor($10000000,flags);
 				  name := name + ' of Timidness';
 				end;
 			    5 : begin
 				  p1 := -1;
-				  flags := uor(%X'00000001',flags);
+				  flags := uor($00000001,flags);
 				  name := name + ' of Weakness';
 				end;
 			    6 : begin
-				  flags := uor(%X'00000400',flags);
+				  flags := uor($00000400,flags);
 				  name := name + ' of Teleportation';
 				end;
 			    7 : begin
 				  p1 := -1;
-				  flags := uor(%X'00000020',flags);
+				  flags := uor($00000020,flags);
 				  name := name + ' of Ugliness';
 				end;
 			  end;
@@ -1168,7 +1168,7 @@
 		1,2,3,4,5,6 :   if (magik(cursed)) then
 				  begin
 				    p1 := -m_bonus(1,20,level);
-				    flags := uor(%X'80000000',flags);
+				    flags := uor($80000000,flags);
 				    cost := -cost;
 				  end
 				else
@@ -1179,7 +1179,7 @@
 			  7 :   if (magik(cursed)) then
 				  begin
 				    p1 := -randint(3);
-				    flags := uor(%X'80000000',flags);
+				    flags := uor($80000000,flags);
 				    cost := -cost;
 				  end
 				else
@@ -1194,7 +1194,7 @@
 				  if (magik(cursed)) then
 				    begin
 				      todam := -todam;
-				      flags := uor(%X'80000000',flags);
+				      flags := uor($80000000,flags);
 				      cost := -cost;
 				    end
 				end;
@@ -1204,7 +1204,7 @@
 				  if (magik(cursed)) then
 				    begin
 				      tohit := -tohit;
-				      flags := uor(%X'80000000',flags);
+				      flags := uor($80000000,flags);
 				      cost := -cost;
 				    end
 				end;
@@ -1214,7 +1214,7 @@
 				  if (magik(cursed)) then
 				    begin
 				      toac := -toac;
-				      flags := uor(%X'80000000',flags);
+				      flags := uor($80000000,flags);
 				      cost := -cost;
 				    end
 				end;
@@ -1226,11 +1226,11 @@
 				    begin
 				      tohit := -tohit;
 				      todam := -todam;
-				      flags := uor(%X'80000000',flags);
+				      flags := uor($80000000,flags);
 				      cost := -cost;
 				    end
 				end;
-			    otherwise ;
+			    else ;
 			  end;
 		  end;
 	  40    : begin { Amulets       }
@@ -1238,7 +1238,7 @@
 		1,2,3,4,5,6 :   if (magik(cursed)) then
 				  begin
 				    p1 := -m_bonus(1,20,level);
-				    flags := uor(%X'80000000',flags);
+				    flags := uor($80000000,flags);
 				    cost := -cost;
 				  end
 				else
@@ -1252,12 +1252,12 @@
 				    begin
 				      p1 := -p1;
 				      cost := -cost;
-				      flags := uor(%X'80000000',flags);
+				      flags := uor($80000000,flags);
 				    end
 				  else
 				    cost := cost + 100*p1;
 				end;
-			    otherwise ;
+			    else ;
 			  end;
 		  end;
 			{ Subval should be even for store, odd for dungeon}
@@ -1292,7 +1292,7 @@
 			22  :   p1 := randint(8)  + 6;
 			23  :   p1 := randint(5)  + 2;
 			24  :   p1 := randint(12) + 12;
-			otherwise ;
+			else ;
 		    end
 		  end;
 	  55    : begin { Staffs        }
@@ -1322,7 +1322,7 @@
 			23  :   p1 := randint(3)  + 4;
 			24  :   p1 := randint(3)  + 1;
 			25  :   p1 := randint(10) + 6;
-			otherwise ;
+			else ;
 		    end
 		  end;
 	  32    : begin { Cloaks        }
@@ -1338,7 +1338,7 @@
 		2             : begin
 				  toac := m_bonus(1,20,level);
 				  p1 := randint(3);
-				  flags := uor(%X'00000100',flags);
+				  flags := uor($00000100,flags);
 				  name := name + ' of Stealth (%P1)';
 				  cost := cost + p1*500 + toac*100;
 				end;
@@ -1352,7 +1352,7 @@
 		    else if (magik(cursed)) then
 		      case randint(3) of
 			1 : begin
-			      flags := uor(%X'80000200',flags);
+			      flags := uor($80000200,flags);
 			      name := name + ' of Irritation';
 			      ac   :=  0;
 			      toac  := -m_bonus(1,10,level);
@@ -1361,14 +1361,14 @@
 			      cost :=  0;
 			    end;
 			2 : begin
-			      flags := uor(%X'80000000',flags);
+			      flags := uor($80000000,flags);
 			      name := name + ' of Vulnerability';
 			      ac   := 0;
 			      toac := -m_bonus(10,100,level+50);
 			      cost := 0;
 			    end;
 			3 : begin
-			      flags := uor(%X'80000000',flags);
+			      flags := uor($80000000,flags);
 			      name := name + ' of Enveloping';
 			      toac  := -m_bonus(1,10,level);
 			      tohit := -m_bonus(2,40,level+10);
@@ -1383,35 +1383,35 @@
 				    name := name + '^ (Empty)';
 				  end;
 		      2         : begin
-				    flags := uor(%X'00000001',flags);
+				    flags := uor($00000001,flags);
 				    name := name + '^ (Locked)';
 				  end;
 		      3,4       : begin
-				    flags := uor(%X'00000011',flags);
+				    flags := uor($00000011,flags);
 				    name := name + '^ (Poison Needle)';
 				  end;
 		      5,6       : begin
-				    flags := uor(%X'00000021',flags);
+				    flags := uor($00000021,flags);
 				    name := name + '^ (Poison Needle)';
 				  end;
 		      7,8,9     : begin
-				    flags := uor(%X'00000041',flags);
+				    flags := uor($00000041,flags);
 				    name := name + '^ (Gas Trap)';
 				  end;
 		      10,11     : begin
-				    flags := uor(%X'00000081',flags);
+				    flags := uor($00000081,flags);
 				    name := name + '^ (Explosion Device)';
 				  end;
 		      12,13,14  : begin
-				    flags := uor(%X'00000101',flags);
+				    flags := uor($00000101,flags);
 				    name := name + '^ (Summoning Runes)';
 				  end;
 		      15,16,17  : begin
-				    flags := uor(%X'00000071',flags);
+				    flags := uor($00000071,flags);
 				    name := name + '^ (Multiple Traps)';
 				  end;
-		      otherwise   begin
-				    flags := uor(%X'00000181',flags);
+		      else   begin
+				    flags := uor($00000181,flags);
 				    name := name + '^ (Multiple Traps)';
 				  end;
 		    end;
@@ -1432,42 +1432,42 @@
 				    cost := cost + 20;
 				  end;
 			   4,5   :begin
-				    flags := uor(flags,%X'00040000');
+				    flags := uor(flags,$00040000);
 				    tohit := tohit + 2;
 				    todam := todam + 4;
 				    name := name + ' of Fire';
 				    cost := cost + 25;
 				  end;
 			   6,7   :begin
-				    flags := uor(flags,%X'00008000');
+				    flags := uor(flags,$00008000);
 				    tohit := tohit + 3;
 				    todam := todam + 3;
 				    name := name + ' of Slay Evil';
 				    cost := cost + 25;
 				  end;
 			   8,9   :begin
-				    flags := uor(flags,%X'01004000');
+				    flags := uor(flags,$01004000);
 				    tohit := tohit + 2;
 				    todam := todam + 2;
 				    name := name + ' of Slay Monster';
 				    cost := cost + 30;
 				  end;
 			   10    :begin
-				    flags := uor(flags,%X'00002000');
+				    flags := uor(flags,$00002000);
 				    tohit := tohit + 10;
 				    todam := todam + 10;
 				    name := name + ' of Dragon Slaying';
 				    cost := cost + 35;
 				  end;
 				  end; {CASE 2}
-		      otherwise ;
+		      else ;
 			  end;  {CASE 1}
 		      end
 		    else if (magik(cursed)) then
 		      begin
 			tohit := -m_bonus(5,55,level);
 			todam := -m_bonus(5,55,level);
-			flags := uor(%X'80000000',flags);
+			flags := uor($80000000,flags);
 			cost := 0;
 		      end;
 		    number := 0;
@@ -1477,13 +1477,13 @@
 		      missle_ctr := 1;
 		    subval := missle_ctr + 512;
 		  end;
-	    otherwise ;
+	    else ;
 	  end
       end;
 
 
 	{ Places a particular trap at location y,x		-RAK-	}
-[psect(misc4$code)] procedure place_trap(y,x,typ,subval : integer);
+procedure place_trap(y,x,typ,subval : integer);
     var
 	cur_pos                 : integer;
 	cur_trap                : treasure_type;
@@ -1499,7 +1499,7 @@
 
 
 	{ Places rubble at location y,x 			-RAK-	}
-[psect(misc4$code)] procedure place_rubble(y,x : integer);
+procedure place_rubble(y,x : integer);
     var
 	cur_pos                 : integer;
     begin
@@ -1513,7 +1513,7 @@
     end;
 
 
-[psect(misc4$code)] procedure place_open_door(y,x : integer);
+procedure place_open_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1528,7 +1528,7 @@
   end;
 
 
-[psect(misc4$code)] procedure place_broken_door(y,x : integer);
+procedure place_broken_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1544,7 +1544,7 @@
   end;
 
 
-[psect(misc4$code)] procedure place_closed_door(y,x : integer);
+procedure place_closed_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1559,7 +1559,7 @@
   end;
 
 
-[psect(misc4$code)] procedure place_locked_door(y,x : integer);
+procedure place_locked_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1575,7 +1575,7 @@
   end;
 
 
-[psect(misc4$code)] procedure place_stuck_door(y,x : integer);
+procedure place_stuck_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1591,7 +1591,7 @@
   end;
 
 
-[psect(misc4$code)] procedure place_secret_door(y,x : integer);
+procedure place_secret_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
@@ -1606,19 +1606,19 @@
   end;
 
 
-[psect(misc4$code)] procedure place_door(y,x : integer);
+procedure place_door(y,x : integer);
     var
 	cur_pos                 : integer;
   begin
     case randint(3) of
       1 : case randint(4) of
 	    1           : place_broken_door(y,x);
-	    otherwise     place_open_door(y,x);
+	    else     place_open_door(y,x);
 	  end;
       2 : case randint(12) of
 	    1,2         : place_locked_door(y,x);
 	    3           : place_stuck_door(y,x);
-	    otherwise     place_closed_door(y,x);
+	    else     place_closed_door(y,x);
 	  end;
       3 : place_secret_door(y,x);
     end;
@@ -1626,7 +1626,7 @@
 
 
 	{ Place an up staircase at given y,x			-RAK-	}
-[psect(misc4$code)] procedure place_up_stairs(y,x : integer);
+procedure place_up_stairs(y,x : integer);
     var
 	cur_pos                         : integer;
     begin
@@ -1643,7 +1643,7 @@
     end;
 
 	{ Place a down staircase at given y,x			-RAK-	}
-[psect(misc4$code)] procedure place_down_stairs(y,x : integer);
+procedure place_down_stairs(y,x : integer);
     var
 	cur_pos                         : integer;
     begin
@@ -1660,7 +1660,7 @@
     end;
 
 	{ Places a staircase 1=up, 2=down			-RAK-	}
-[psect(misc4$code)] procedure place_stairs(typ,num,walls : integer);
+procedure place_stairs(typ,num,walls : integer);
     var
 	i1,i2,y1,x1,y2,x2               : integer;
 	flag                            : boolean;
@@ -1702,7 +1702,7 @@
 
 
 	{ Places a treasure (Gold or Gems) at given row, column -RAK-	}
-[psect(misc4$code)] procedure place_gold(y,x : integer);
+procedure place_gold(y,x : integer);
     var
 	cur_pos,i1              : integer;
     begin
@@ -1720,7 +1720,7 @@
 
 
 	{ Returns the array number of a random object		-RAK-	}
-[psect(misc4$code)] function get_obj_num(level : integer) : integer;
+function get_obj_num(level : integer) : integer;
     var
 	i1      : integer;
     begin
@@ -1736,7 +1736,7 @@
 
 
 	{ Places an object at given row, column co-ordinate	-RAK-	}
-[psect(misc4$code)] procedure place_object(y,x : integer);
+procedure place_object(y,x : integer);
     var
 	cur_pos                         : integer;
 	mag1,mag2                       : integer;
@@ -1749,7 +1749,7 @@
 
 
 	{ Allocates an object for tunnels and rooms		-RAK-	}
-[psect(misc4$code)] procedure alloc_object      (
+procedure alloc_object      (
 			alloc_set       :       obj_set;
 			typ,num         :       integer
 						);
@@ -1775,7 +1775,7 @@
 
 
 	{ Creates objects nearby the coordinates given		-RAK-	}
-[psect(misc4$code)] procedure random_object(y,x,num : integer);
+procedure random_object(y,x,num : integer);
     var
 	i1,i2,i3                : integer;
     begin
@@ -1802,7 +1802,7 @@
 
 
 	{ Converts stat num into string 			-RAK-	}
-[psect(misc5$code)] procedure cnv_stat  (
+procedure cnv_stat  (
 			stat            :       byteint;
 			var out_val     :       stat_type
 					);
@@ -1814,17 +1814,17 @@
 	begin
 	  part1 := 18;
 	  part2 := stat - 18;
-	  writev(tmp_str,part1:2,'/',part2:1);
+	  WriteStr(tmp_str,part1:2,'/',part2:1);
 	end
       else
-	writev(tmp_str,stat:2);
+	WriteStr(tmp_str,stat:2);
       if (length(tmp_str) < 6) then tmp_str := pad(tmp_str,' ',6);
       out_val := tmp_str;
     end;
 
 
 	{ Print character stat in given row, column		-RAK-	}
-[psect(misc5$code)] procedure prt_stat  (
+procedure prt_stat  (
 			stat_name       : vtype;
 			stat            : byteint;
 			row,column      : integer
@@ -1840,7 +1840,7 @@
 
 
 	{ Print character info in given row, column		-RAK-	}
-[psect(misc5$code)] procedure prt_field(info : vtype; row,column : integer);
+procedure prt_field(info : vtype; row,column : integer);
       var
 		out_val1,out_val2       : vtype;
       begin
@@ -1849,20 +1849,20 @@
 
 
 	{ Print number with header at given row, column 	-RAK-	}
-[psect(misc5$code)] procedure prt_num   (
+procedure prt_num   (
 			header          :       vtype;
 			num,row,column  :       integer
 					);
       var
 		out_val                 : vtype;
       begin
-	writev(out_val,header,num:1,' ');
+	WriteStr(out_val,header,num:1,' ');
 	put_buffer(out_val,row,column);
       end;
 
 
 	{ Adjustment for wisdom 				-JWT-	}
-[psect(misc2$code)] function wis_adj : integer;
+function wis_adj : integer;
     begin
       if (py.stat.cwis > 117) then
 	wis_adj := 7
@@ -1884,7 +1884,7 @@
 
 
 	{ adjustment for intellegence				-JWT-	}
-[psect(misc2$code)] function int_adj : integer;
+function int_adj : integer;
     begin
       if (py.stat.cint > 117) then
 	int_adj := 7
@@ -1907,7 +1907,7 @@
 
 	{ Adjustment for charisma				-RAK-	}
 	{ Percent decrease or increase in price of goods                }
-[psect(misc2$code)] function chr_adj : real;
+function chr_adj : real;
     begin
       if (py.stat.cchr > 117) then
 	chr_adj := -0.10
@@ -1937,13 +1937,13 @@
 	   5 :  chr_adj :=  0.22;
 	   4 :  chr_adj :=  0.24;
 	   3 :  chr_adj :=  0.25;
-	   otherwise chr_adj := 0.00;   { Error trap    }
+	   else chr_adj := 0.00;   { Error trap    }
 	end;
     end;
 
 
 	{ Returns a character's adjustment to hit points        -JWT-   }
-[psect(misc2$code)] function con_adj : integer;
+function con_adj : integer;
   begin
     with py.stat do
       if      (ccon =   3) then con_adj := -4
@@ -1959,7 +1959,7 @@
 
 
 	{ Calculates hit points for each level that is gained.	-RAK-	}
-[psect(misc2$code)] function get_hitdie : integer;
+function get_hitdie : integer;
     var
 	i1      : integer;
     begin
@@ -1968,49 +1968,49 @@
 
 
 	{ Prints title of character				-RAK-	}
-[psect(misc5$code)] procedure prt_title;
+procedure prt_title;
     begin
       prt_field(py.misc.title,5,stat_column);
     end;
 
 
 	{ Prints strength					-RAK-	}
-[psect(misc5$code)] procedure prt_strength;
+procedure prt_strength;
     begin
       prt_stat('',py.stat.cstr,7,stat_column+6);
     end;
 
 
 	{ Prints intelligence					-RAK-	}
-[psect(misc5$code)] procedure prt_intelligence;
+procedure prt_intelligence;
     begin
       prt_stat('',py.stat.cint,8,stat_column+6);
     end;
 
 
 	{ Prints wisdom 					-RAK-	}
-[psect(misc5$code)] procedure prt_wisdom;
+procedure prt_wisdom;
     begin
       prt_stat('',py.stat.cwis,9,stat_column+6);
     end;
 
 
 	{ Prints dexterity					-RAK-	}
-[psect(misc5$code)] procedure prt_dexterity;
+procedure prt_dexterity;
     begin
       prt_stat('',py.stat.cdex,10,stat_column+6);
     end;
 
 
 	{ Prints constitution					-RAK-	}
-[psect(misc5$code)] procedure prt_constitution;
+procedure prt_constitution;
     begin
       prt_stat('',py.stat.ccon,11,stat_column+6);
     end;
 
 
 	{ Prints charisma					-RAK-	}
-[psect(misc5$code)] procedure prt_charisma;
+procedure prt_charisma;
     begin
       prt_stat('',py.stat.cchr,12,stat_column+6);
     end;
@@ -2018,49 +2018,49 @@
 
 
 	{ Prints level						-RAK-	}
-[psect(misc5$code)] procedure prt_level;
+procedure prt_level;
     begin
       prt_num( '',py.misc.lev,14,stat_column+6);
     end;
 
 
 	{ Prints players current mana points (a real number...) -RAK-	}
-[psect(misc1$code)] procedure prt_cmana;
+procedure prt_cmana;
     begin
       prt_num( '',trunc(py.misc.cmana),16,stat_column+6);
     end;
 
 
 	{ Prints Max hit points 				-RAK-	}
-[psect(misc5$code)] procedure prt_mhp;
+procedure prt_mhp;
     begin
       prt_num( '',py.misc.mhp,17,stat_column+6);
     end;
 
 
 	{ Prints players current hit points (a real number...)	-RAK-	}
-[psect(misc1$code)] procedure prt_chp;
+procedure prt_chp;
     begin
       prt_num( '',trunc(py.misc.chp),18,stat_column+6);
     end;
 
 
 	{ prints current AC					-RAK-	}
-[psect(misc5$code)] procedure prt_pac;
+procedure prt_pac;
     begin
       prt_num( '',py.misc.dis_ac,20,stat_column+6);
     end;
 
 
 	{ Prints current gold					-RAK-	}
-[psect(misc5$code)] procedure prt_gold;
+procedure prt_gold;
     begin
       prt_num( '',py.misc.au,21,stat_column+6);
     end;
 
 
 	{ Prints depth in stat area				-RAK-	}
-[psect(misc5$code)] procedure prt_depth;
+procedure prt_depth;
       var
 		depths  : vtype;
 		depth   : integer;
@@ -2069,17 +2069,17 @@
 	if (depth = 0) then
 	  depths := 'Town level'
 	else
-	  writev(depths,'Depth: ',depth:1,' (feet)');
+	  WriteStr(depths,'Depth: ',depth:1,' (feet)');
 	prt(depths,24,61);
       end;
 
 
 	{ Prints status of hunger				-RAK-	}
-[psect(misc5$code)] procedure prt_hunger;
+procedure prt_hunger;
     begin
-      if (uand(%X'000002',py.flags.status) <> 0) then
+      if (uand($000002,py.flags.status) <> 0) then
 	put_buffer('Weak    ',24,1)
-      else if (uand(%X'000001',py.flags.status) <> 0) then
+      else if (uand($000001,py.flags.status) <> 0) then
 	put_buffer('Hungry  ',24,1)
       else
 	put_buffer('        ',24,1);
@@ -2087,9 +2087,9 @@
 
 
 	{ Prints Blind status					-RAK-	}
-[psect(misc5$code)] procedure prt_blind;
+procedure prt_blind;
     begin
-      if (uand(%X'000004',py.flags.status) <> 0) then
+      if (uand($000004,py.flags.status) <> 0) then
 	put_buffer('Blind  ',24,9)
       else
 	put_buffer('       ',24,9);
@@ -2097,9 +2097,9 @@
 
 
 	{ Prints Confusion status				-RAK-	}
-[psect(misc5$code)] procedure prt_confused;
+procedure prt_confused;
     begin
-      if (uand(%X'000008',py.flags.status) <> 0) then
+      if (uand($000008,py.flags.status) <> 0) then
 	put_buffer('Confused  ',24,16)
       else
 	put_buffer('          ',24,16);
@@ -2107,9 +2107,9 @@
 
 
 	{ Prints Fear status					-RAK-	}
-[psect(misc5$code)] procedure prt_afraid;
+procedure prt_afraid;
     begin
-      if (uand(%X'000010',py.flags.status) <> 0) then
+      if (uand($000010,py.flags.status) <> 0) then
 	put_buffer('Afraid  ',24,26)
       else
 	put_buffer('        ',24,26);
@@ -2117,9 +2117,9 @@
 
 
 	{ Prints Poisoned status				-RAK-	}
-[psect(misc5$code)] procedure prt_poisoned;
+procedure prt_poisoned;
     begin
-      if (uand(%X'000020',py.flags.status) <> 0) then
+      if (uand($000020,py.flags.status) <> 0) then
 	put_buffer('Poisoned  ',24,34)
       else
 	put_buffer('          ',24,34);
@@ -2127,9 +2127,9 @@
 
 
 	{ Prints Searching status				-RAK-	}
-[psect(misc5$code)] procedure prt_search;
+procedure prt_search;
     begin
-      if (uand(%X'000100',py.flags.status) <> 0) then
+      if (uand($000100,py.flags.status) <> 0) then
 	put_buffer('Searching  ',24,44)
       else
 	put_buffer('           ',24,44);
@@ -2137,9 +2137,9 @@
 
 
 	{ Prints Resting status 				-RAK-	}
-[psect(misc5$code)] procedure prt_rest;
+procedure prt_rest;
     begin
-      if (uand(%X'000200',py.flags.status) <> 0) then
+      if (uand($000200,py.flags.status) <> 0) then
 	put_buffer('Resting    ',24,44)
       else
 	put_buffer('           ',24,44);
@@ -2147,7 +2147,7 @@
 
 
 	{ Prints winner status on display			-RAK-	}
-[psect(misc5$code)] procedure prt_winner;
+procedure prt_winner;
     begin
       put_buffer('*Winner*',23,1);
     end;
@@ -2157,7 +2157,7 @@
 
 
 	{ Increases a stat by one randomized level		-RAK-	}
-[psect(misc2$code)] function in_statp(stat : byteint) : byteint;
+function in_statp(stat : byteint) : byteint;
     begin
       if (stat < 18) then
 	stat := stat + 1
@@ -2174,7 +2174,7 @@
 
 
 	{ Decreases a stat by one randomized level		-RAK-	}
-[psect(misc2$code)] function de_statp(stat : byteint) : byteint;
+function de_statp(stat : byteint) : byteint;
     begin
       if (stat < 19) then
 	stat := stat - 1
@@ -2191,7 +2191,7 @@
 
 
 	{ Increases a stat by one true level			-RAK-	}
-[psect(misc2$code)] function in_statt(stat : byteint) : byteint;
+function in_statt(stat : byteint) : byteint;
     begin
       if (stat < 18) then
 	stat := stat + 1
@@ -2206,7 +2206,7 @@
 
 
 	{ Decreases a stat by true level			-RAK-	}
-[psect(misc2$code)] function de_statt(stat : byteint) : byteint;
+function de_statt(stat : byteint) : byteint;
     begin
       if (stat > 27) then
 	stat := stat - 10
@@ -2222,7 +2222,7 @@
 
 
 	{ Returns a character's adjustment to hit.              -JWT-   }
-[psect(misc2$code)] function tohit_adj : integer;
+function tohit_adj : integer;
   var
 	total                   : integer;
   begin
@@ -2251,7 +2251,7 @@
 
 
 	{ Returns a character's adjustment to armor class       -JWT-   }
-[psect(misc2$code)] function toac_adj : integer;
+function toac_adj : integer;
   begin
     with py.stat do
       if      (cdex <   4) then toac_adj :=  -4
@@ -2268,7 +2268,7 @@
 
 
 	{ Returns a character's adjustment to disarm            -RAK-   }
-[psect(misc2$code)] function todis_adj : integer;
+function todis_adj : integer;
   begin
     with py.stat do
       if      (cdex =   3) then todis_adj :=  -8
@@ -2287,7 +2287,7 @@
 
 
 	{ Returns a character's adjustment to damage            -JWT-   }
-[psect(misc2$code)] function todam_adj : integer;
+function todam_adj : integer;
   begin
     with py.stat do
       if      (cstr <   4) then todam_adj := -2
@@ -2303,12 +2303,12 @@
 
 
 	{ Pre-declaration of PRT_EXPERIENCE			-RAK-	}
-[psect(misc5$code)] procedure prt_experience;
+procedure prt_experience;
 	forward;
 
 
 	{ Prints character-screen info				-RAK-	}
-[psect(misc5$code)] procedure prt_stat_block;
+procedure prt_stat_block;
     begin
       prt_field(py.misc.race,                 3,stat_column);
       prt_field(py.misc.tclass,               4,stat_column);
@@ -2327,25 +2327,25 @@
       prt_num( 'AC  : ',py.misc.dis_ac,      20,stat_column);
       prt_num( 'GOLD: ',py.misc.au,          21,stat_column);
       if (total_winner) then prt_winner;
-      if (uand(%X'000003',py.flags.status) <> 0) then
+      if (uand($000003,py.flags.status) <> 0) then
 	prt_hunger;
-      if (uand(%X'000004',py.flags.status) <> 0) then
+      if (uand($000004,py.flags.status) <> 0) then
 	prt_blind;
-      if (uand(%X'000008',py.flags.status) <> 0) then
+      if (uand($000008,py.flags.status) <> 0) then
 	prt_confused;
-      if (uand(%X'000010',py.flags.status) <> 0) then
+      if (uand($000010,py.flags.status) <> 0) then
 	prt_afraid;
-      if (uand(%X'000020',py.flags.status) <> 0) then
+      if (uand($000020,py.flags.status) <> 0) then
 	prt_poisoned;
-      if (uand(%X'000100',py.flags.status) <> 0) then
+      if (uand($000100,py.flags.status) <> 0) then
 	prt_search;
-      if (uand(%X'000200',py.flags.status) <> 0) then
+      if (uand($000200,py.flags.status) <> 0) then
 	prt_rest;
     end;
 
 
 	{ Draws entire screen					-RAK-	}
-[psect(misc5$code)] procedure draw_cave;
+procedure draw_cave;
     begin
       clear(1,1);
       prt_stat_block;
@@ -2355,7 +2355,7 @@
 
 
 	{ Prints the following information on the screen.	-JWT-	}
-[psect(create$code)] procedure put_character;
+procedure put_character;
     begin
       clear(1,1);
       with py.misc do
@@ -2369,7 +2369,7 @@
 
 
 	{ Prints the following information on the screen.	-JWT-	}
-[psect(create$code)] procedure put_stats;
+procedure put_stats;
     begin
       with py do
 	begin
@@ -2388,7 +2388,7 @@
 
 
 	{ Returns a rating of x depending on y			-JWT-	}
-[psect(create$code)] function likert(x,y : integer) : btype;
+function likert(x,y : integer) : btype;
       begin
 	case trunc(x/y) of
 	  -3,-2,-1      : likert := 'Very Bad';
@@ -2398,13 +2398,13 @@
 	  5             : likert := 'Good';
 	  6             : likert := 'Very Good';
 	  7,8           : likert := 'Superb';
-	  otherwise       likert := 'Excellent';
+	  else       likert := 'Excellent';
 	end
       end;
 
 
 	{ Prints age, height, weight, and SC			-JWT-	}
-[psect(create$code)] procedure put_misc1;
+procedure put_misc1;
     begin
       with py do
 	begin
@@ -2417,7 +2417,7 @@
 
 
 	{ Prints the following information on the screen.	-JWT-	}
-[psect(create$code)] procedure put_misc2;
+procedure put_misc2;
     begin
       with py.misc do
 	begin
@@ -2433,7 +2433,7 @@
 
 
 	{ Prints ratings on certain abilities			-RAK-	}
-[psect(create$code)] procedure put_misc3;
+procedure put_misc3;
       var
 	xbth,xbthb,xfos,xsrh,xstl,xdis,xsave,xdev       : integer;
 	xinfra                                          : vtype;
@@ -2450,7 +2450,7 @@
 	    xdis  := disarm + lev + 2*todis_adj + int_adj;
 	    xsave := save + lev + wis_adj;
 	    xdev  := save + lev + int_adj;
-	    writev(xinfra,py.flags.see_infra*10:1,' feet');
+	    WriteStr(xinfra,py.flags.see_infra*10:1,' feet');
 	  end;
 	prt('(Miscellaneous Abilities)',16,24);
 	put_buffer('Fighting    : '+likert(xbth ,12) ,17, 2);
@@ -2466,7 +2466,7 @@
 
 
 	{ Used to display the character on the screen.		-RAK-	}
-[psect(create$code)] procedure display_char;
+procedure display_char;
       var
 	dummy   : char;
       begin
@@ -2479,7 +2479,7 @@
 
 
 	{ Gets a name for the character 			-JWT-	}
-[psect(create$code)] procedure get_name;
+procedure get_name;
     begin
       prt('Enter your player''s name  [press <RETURN> when finished]',22,3);
       get_string(py.misc.name,3,15,24);
@@ -2488,7 +2488,7 @@
 
 
 	{ Chances the name of the character			-JWT-	}
-[psect(create$code)] procedure change_name;
+procedure change_name;
     var
 	c       : char;
 	flag    : boolean;
@@ -2508,7 +2508,7 @@
 
 
 	{ Builds passwords					-RAK-	}
-[psect(setup$code)] procedure bpswd;
+procedure bpswd;
       var
 		i1              : integer;
       begin
@@ -2523,7 +2523,7 @@
 
 
 	{ Destroy an item in the inventory			-RAK-	}
-[psect(misc4$code)] procedure inven_destroy(item_val : integer);
+procedure inven_destroy(item_val : integer);
       var
 		i2      : integer;
       begin
@@ -2549,7 +2549,7 @@
 
 
 	{ Drops an item from inventory to given location	-RAK-	}
-[psect(misc4$code)] procedure inven_drop(item_val,y,x : integer);
+procedure inven_drop(item_val,y,x : integer);
       var
 	i1                              : integer;
       begin
@@ -2565,7 +2565,7 @@
 
 
 	{ Destroys a type of item on a given percent chance	-RAK-	}
-[psect(misc4$code)] function inven_damage(
+function inven_damage(
 			typ             :       obj_set;
 			perc            :       integer
 					) : integer;
@@ -2586,7 +2586,7 @@
 
 
 	{ Computes current weight limit 			-RAK-	}
-[psect(misc4$code)] function weight_limit : integer;
+function weight_limit : integer;
       var
 	weight_cap      : integer;
       begin
@@ -2597,7 +2597,7 @@
 
 
 	{ Check inventory for too much weight			-RAK-	}
-[psect(misc4$code)] function inven_check_weight : boolean;
+function inven_check_weight : boolean;
       var
 	item_wgt,max_weight             : integer;
       begin
@@ -2612,7 +2612,7 @@
 
 
 	{ Check to see if he will be carrying too many objects	-RAK-	}
-[psect(misc4$code)] function inven_check_num : boolean;
+function inven_check_num : boolean;
       var
 	item_num,i1                     : integer;
 	flag                            : boolean;
@@ -2631,7 +2631,7 @@
 
 	{ Add the item in INVEN_MAX to players inventory.  Return the	}
 	{ item position for a description if needed...          -RAK-   }
-[psect(misc4$code)] procedure inven_carry(var item_val : integer);
+procedure inven_carry(var item_val : integer);
       var
 	item_num,wgt                    : integer;
 	typ,subt                        : integer;
@@ -2689,7 +2689,7 @@
 
 
 	{ Returns spell chance of failure for spell		-RAK-	}
-[psect(misc2$code)] procedure spell_chance(var spell : spl_rec);
+procedure spell_chance(var spell : spl_rec);
       begin
 	with magic_spell[py.misc.pclass,spell.splnum] do
 	  with spell do
@@ -2710,7 +2710,7 @@
 
 
 	{ Print list of spells					-RAK-	}
-[psect(misc2$code)] procedure print_new_spells(
+procedure print_new_spells(
 			spell           :       spl_type;
 			num             :       integer;
 			var redraw      :       boolean
@@ -2726,7 +2726,7 @@
 	with magic_spell[py.misc.pclass,spell[i1].splnum] do
 	  begin
 	    spell_chance(spell[i1]);
-	    writev(out_val,chr(96+i1),') ',pad(sname,' ',30),
+	    WriteStr(out_val,chr(96+i1),') ',pad(sname,' ',30),
 		slevel:3,'    ',smana:3,'      ',spell[i1].splchn:2);
 	    prt(out_val,2+i1,1);
 	  end;
@@ -2735,7 +2735,7 @@
 
 
 	{ Returns spell pointer 				-RAK-	}
-[psect(misc2$code)] function get_spell(spell : spl_type; num : integer;
+function get_spell(spell : spl_type; num : integer;
 		     var sn,sc : integer; prompt : vtype;
 		     var redraw : boolean) : boolean;
     var
@@ -2746,7 +2746,7 @@
     begin
       sn := 0;
       flag := true;
-      writev(out_val1,'(Spells a-',chr(num+96),
+      WriteStr(out_val1,'(Spells a-',chr(num+96),
 				', *=List, <ESCAPE>=exit) ',prompt);
       while (((sn < 1) or (sn > num)) and (flag)) do
 	begin
@@ -2759,7 +2759,7 @@
 			  reset_flag := true;
 			end;
 	    42        : print_new_spells(spell,num,redraw);
-	    otherwise   sn := sn - 96;
+	    else   sn := sn - 96;
 	  end;
 	end;
       msg_flag := false;
@@ -2774,7 +2774,7 @@
 
 
 	{ Learn some magic spells (Mage)			-RAK-	}
-[psect(misc2$code)] function learn_spell(var redraw : boolean) : boolean;
+function learn_spell(var redraw : boolean) : boolean;
       var
 	i2                              : unsigned;
 	i1,i3,sn,sc                     : integer;
@@ -2792,7 +2792,7 @@
 	  5 : new_spells := randint(2);
 	  6 : new_spells := randint(3);
 	  7 : new_spells := randint(2)+1;
-	  otherwise new_spells := 0;
+	  else new_spells := 0;
 	end;
 	i1 := 0;
 	spell_flag := 0;
@@ -2839,7 +2839,7 @@
 
 
 	{ Learn some prayers (Priest)				-RAK-	}
-[psect(misc2$code)] function learn_prayer : boolean;
+function learn_prayer : boolean;
       var
 	i1,i2,i3,i4,new_spell           : integer;
 	test_array                      : array [1..32] of integer;
@@ -2905,7 +2905,7 @@
 
 
 	{ Gain some mana if you knows at least one spell	-RAK-	}
-[psect(misc2$code)] procedure gain_mana(amount : integer);
+procedure gain_mana(amount : integer);
       var
 	i1,new_mana                     : integer;
 	knows_spell                     : boolean;
@@ -2926,7 +2926,7 @@
 		5 : new_mana := 2;
 		6 : new_mana := 3;
 		7 : new_mana := 4;
-		otherwise new_mana := 0;
+		else new_mana := 0;
 	      end
 	    else
 	      case amount of
@@ -2938,7 +2938,7 @@
 		5 : new_mana := 3;
 		6 : new_mana := 3;
 		7 : new_mana := 4;
-		otherwise new_mana := 0;
+		else new_mana := 0;
 	      end;
 	    py.misc.mana  := py.misc.mana  + new_mana;
 	    py.misc.cmana := py.misc.cmana + new_mana;
@@ -2947,7 +2947,7 @@
 
 
 	{ Increases hit points and level			-RAK-	}
-[psect(misc2$code)] procedure gain_level;
+procedure gain_level;
     var
 	nhp,dif_exp,need_exp            : integer;
 	redraw                          : boolean;
@@ -2966,7 +2966,7 @@
 		py.misc.exp := need_exp + (dif_exp div 2);
 	      end;
 	    title := player_title[pclass,lev];
-	    writev(out_val,'Welcome to level ',lev:1,'.');
+	    WriteStr(out_val,'Welcome to level ',lev:1,'.');
 	    msg_print(out_val);
 	    msg_print(' ');
 	    msg_flag := false;
@@ -3015,17 +3015,17 @@
 
 	{ Inserts a string into a string				}
   procedure insert_str                  (
-			%ref object_str : varying[a] of char;
-			%ref mtc_str    : varying[b] of char;
-			%ref insert_str : varying[c] of char
+			%ref object_str : string[a];
+			%ref mtc_str    : string[b];
+			%ref insert_str : string[c]
 					);
 	external;
 
 
 	{ Inserts a number into a string				}
-[psect(misc1$code)] procedure insert_num(
-			var object_str  : varying[a] of char;
-			mtc_str         : varying[b] of char;
+procedure insert_num(
+			var object_str  : string[a];
+			mtc_str         : string[b];
 			number          : integer;
 			show_sign       : boolean
 					);
@@ -3042,15 +3042,15 @@
 	  str1 := substr(object_str,1,pos-1);
 	  str2 := substr(object_str,pos+mlen,olen-(pos+mlen-1));
 	  if ((number >= 0) and (show_sign)) then
-	    writev(object_str,str1,'+',number:1,str2)
+	    WriteStr(object_str,str1,'+',number:1,str2)
 	  else
-	    writev(object_str,str1,number:1,str2);
+	    WriteStr(object_str,str1,number:1,str2);
 	end
     end;
 
 
 	{ Checks to see if user is a wizard			-RAK-	}
-[psect(wizard$code)] function check_pswd : boolean;
+function check_pswd : boolean;
       var
 		i1              : integer;
 		x               : char;
@@ -3064,7 +3064,7 @@
 	  inkey(x);
 	  case ord(x) of
 	    13  :       ;
-	    otherwise   begin
+	    else   begin
 			  i1 := i1 + 1;
 			  tpw[i1] := x;
 			end
@@ -3087,7 +3087,7 @@
 
 
 	{ Weapon weight VS strength and dexterity		-RAK-	}
-[psect(moria$code)] function attack_blows(
+function attack_blows(
 			weight          :       integer;
 			var wtohit      :       integer
 					) : integer;
@@ -3123,7 +3123,7 @@
 
 
 	{ Critical hits, Nasty way to die...			-RAK-	}
-[psect(moria$code)] function critical_blow(
+function critical_blow(
 			weight,plus,dam :       integer
 					  ) : integer;
       begin
@@ -3159,7 +3159,7 @@
 
 
 	{ Given direction 'dir', returns new row, column location -RAK- }
-[psect(misc1$code)] function move(dir : integer; var y,x : integer) : boolean;
+function move(dir : integer; var y,x : integer) : boolean;
       var
 		new_row,new_col         : integer;
       begin
@@ -3213,7 +3213,7 @@
 
 
 	{ Saving throws for player character... 		-RAK-	}
-[psect(moria$code)] function player_saves(adjust : integer) : boolean;
+function player_saves(adjust : integer) : boolean;
 	begin
 	  if (randint(100) <= (py.misc.save + adjust)) then
 	    player_saves := true
@@ -3223,7 +3223,7 @@
 
 
 	{ Init players with some belongings			-RAK-	}
-[psect(setup$code)] procedure char_inven_init;
+procedure char_inven_init;
       var
 	i1,i2,dummy             : integer;
       begin

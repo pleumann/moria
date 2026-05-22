@@ -1,6 +1,6 @@
 	{ Comments vary...					-RAK-	}
 	{ Comment one : Finished haggling				}
-[psect(store$code)] procedure prt_comment1;
+procedure prt_comment1;
       begin
 	msg_flag := false;
 	case randint(14) of
@@ -22,7 +22,7 @@
       end;
 
 	{ %A1 is offer, %A2 is asking...		}
-[psect(store$code)] procedure prt_comment2(offer,asking,final : integer);
+procedure prt_comment2(offer,asking,final : integer);
       var
 	comment				: vtype;
       begin
@@ -56,7 +56,7 @@
 	msg_print(comment);
       end;
 
-[psect(store$code)] procedure prt_comment3(offer,asking,final : integer);
+procedure prt_comment3(offer,asking,final : integer);
       var
 	comment				: vtype;
       begin
@@ -90,7 +90,7 @@
       end;
 
 	{ Kick 'da bum out...					-RAK-	}
-[psect(store$code)] procedure prt_comment4;
+procedure prt_comment4;
       begin
 	msg_flag := false;
 	case randint(5) of
@@ -123,7 +123,7 @@
 	msg_flag := false;
       end;
 
-[psect(store$code)] procedure prt_comment5;
+procedure prt_comment5;
       begin
 	case randint(10) of
 	  1  :	msg_print('You will have to do better than that!');
@@ -140,7 +140,7 @@
       end;
 
 
-[psect(store$code)] procedure prt_comment6;
+procedure prt_comment6;
       begin
 	case randint(5) of
 	  1  :	msg_print('I must of heard you wrong...');
@@ -153,7 +153,7 @@
 
 
 	{ Displays the set of commands				-RAK-	}
-[psect(store$code)] procedure display_commands;
+procedure display_commands;
       begin
 prt('You may:',21,1);
 prt(' p) Purchase an item.           b) Browse store''s inventory.',22,1);
@@ -163,7 +163,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Displays the set of commands				-RAK-	}
-[psect(store$code)] procedure haggle_commands(typ : integer);
+procedure haggle_commands(typ : integer);
       begin
 	if (typ = -1) then
 	  prt('Specify an asking-price in gold pieces.',22,1)
@@ -175,7 +175,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Displays a store's inventory				-RAK-	}
-[psect(store$code)] procedure display_inventory(store_num,start : integer);
+procedure display_inventory(store_num,start : integer);
       var
 	i1,i2,stop			: integer;
 	out_val1,out_val2		: vtype;
@@ -192,16 +192,16 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 		    if ((subval > 255) and (subval < 512)) then
 		      number := 1;
 		  objdes(out_val1,inven_max,true);
-		  writev(out_val2,chr(97+i1),') ',out_val1);
+		  WriteStr(out_val2,chr(97+i1),') ',out_val1);
 		  prt(out_val2,i1+6,1);
 		  if (store_inven[start].scost < 0) then
 		    begin
 		      i2 := abs(store_inven[start].scost);
 		      i2 := i2 + trunc(i2*chr_adj);
-		      writev(out_val2,i2:6);
+		      WriteStr(out_val2,i2:6);
 		    end
 		  else
-		    writev(out_val2,store_inven[start].scost:6,' [Fixed]');
+		    WriteStr(out_val2,store_inven[start].scost:6,' [Fixed]');
 		  prt(out_val2,i1+6,60);
 		  i1 := i1 + 1;
 		  start := start + 1;
@@ -214,7 +214,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Re-displays only a single cost			-RAK-	}
-[psect(store$code)] procedure display_cost(store_num,pos : integer);
+procedure display_cost(store_num,pos : integer);
       var
 	i1				: integer;
 	out_val				: vtype;
@@ -226,27 +226,27 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 	      begin
 		i2 := abs(store_inven[pos].scost);
 		i2 := i2 + trunc(i2*chr_adj);
-		writev(out_val,i2:6);
+		WriteStr(out_val,i2:6);
 	      end
 	    else
-	      writev(out_val,store_inven[pos].scost:6,' [Fixed]');
+	      WriteStr(out_val,store_inven[pos].scost:6,' [Fixed]');
 	    prt(out_val,i1+6,60);
 	  end;
       end;
 
 
 	{ Displays players gold					-RAK-	}
-[psect(store$code)] procedure store_prt_gold;
+procedure store_prt_gold;
       var
 	out_val			: vtype;
       begin
-	writev(out_val,'Gold Remaining : ',py.misc.au:1);
+	WriteStr(out_val,'Gold Remaining : ',py.misc.au:1);
         prt(out_val,19,18);
       end;
 
 
 	{ Displays store					-RAK-	}
-[psect(store$code)] procedure display_store(store_num,cur_top : integer);
+procedure display_store(store_num,cur_top : integer);
       begin
 	with store[store_num] do
 	  begin
@@ -262,7 +262,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Get the ID of a store item and return it's value	-RAK-	}
-[psect(store$code)] function get_store_item(
+function get_store_item(
 				var com_val	: integer;
 				pmt	 	: vtype;
 				i1,i2		: integer) : boolean;
@@ -273,7 +273,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
       begin
 	com_val := 0;
 	flag := true;
-	writev(out_val,'(Items ',chr(i1+96),'-',chr(i2+96),
+	WriteStr(out_val,'(Items ',chr(i1+96),'-',chr(i2+96),
 					', ^Z to exit) ',pmt);
 	while (((com_val < i1) or (com_val > i2)) and (flag)) do
 	  begin
@@ -282,7 +282,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 	    com_val := ord(command);
 	    case com_val of
 		3,25,26,27 :	flag := false;
-		otherwise com_val := com_val - 96;
+		else com_val := com_val - 96;
 	    end;
 	  end;
 	msg_flag := false;
@@ -292,7 +292,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Increase the insult counter and get pissed if too many -RAK-	}
-[psect(store$code)] function increase_insults(store_num : integer) : boolean;
+function increase_insults(store_num : integer) : boolean;
       begin
 	increase_insults := false;
 	with store[store_num] do
@@ -310,7 +310,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Decrease insults					-RAK-	}
-[psect(store$code)] procedure decrease_insults(store_num : integer);
+procedure decrease_insults(store_num : integer);
       begin
 	with store[store_num] do
 	  begin
@@ -321,7 +321,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Have insulted while haggling				-RAK-	}
-[psect(store$code)] function haggle_insults(store_num : integer) : boolean;
+function haggle_insults(store_num : integer) : boolean;
 	begin
 	  haggle_insults := false;
 	  if (increase_insults(store_num)) then
@@ -330,7 +330,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 	    prt_comment5;
 	end;
 
-[psect(store$code)] function recieve_offer(
+function recieve_offer(
 				store_num		: integer;
 				comment 		: vtype;
  				var new_offer 		: integer;
@@ -355,7 +355,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 	          flag := false;
 		  erase_line(msg_line,msg_line);
 		end;
-	      readv(out_val,i1,error:=continue);
+	      ReadStr(out_val,i1);
 	    until((i1 <> 0) or not(flag));
 	    if (flag) then num := i1;
 	    get_haggle := flag;
@@ -385,7 +385,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Haggling routine					-RAK-	}
-[psect(store$code)] function purchase_haggle(
+function purchase_haggle(
 				store_num	: integer;
 				var price	: integer;
 				item		: treasure_type) : integer;
@@ -425,7 +425,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 	repeat
 	  repeat
 	    loop_flag := true;
-	    writev(out_val,comment,cur_ask:1);
+	    WriteStr(out_val,comment,cur_ask:1);
 	    put_buffer(out_val,2,1);
 	    case recieve_offer(store_num,'What do you offer? ',
 			     new_offer,last_offer,1) of
@@ -437,7 +437,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 		    purchase_haggle := 2;
 		    flag   := true;
 		  end;
-	      otherwise if (new_offer > cur_ask) then
+	      else if (new_offer > cur_ask) then
 			  begin
 			    prt_comment6;
 			    loop_flag := false;
@@ -490,7 +490,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 		    begin
 	              last_offer := new_offer;
 		      prt('',2,1);
-	              writev(out_val,'Your last offer : ',last_offer:1);
+	              WriteStr(out_val,'Your last offer : ',last_offer:1);
 	              put_buffer(out_val,2,40);
 		      prt_comment2(last_offer,cur_ask,final_flag);
 		    end;
@@ -503,7 +503,7 @@ prt('^Z) Exit from Building.        ^R) Redraw the screen.',24,1);
 
 
 	{ Haggling routine					-RAK-	}
-[psect(store$code)] function sell_haggle(
+function sell_haggle(
 				store_num	: integer;
 				var price	: integer;
 				item		: treasure_type) : integer;
@@ -572,7 +572,7 @@ msg_print(' ');
 	    repeat
 	      repeat
 	        loop_flag := true;
-	        writev(out_val,comment,cur_ask:1);
+	        WriteStr(out_val,comment,cur_ask:1);
 	        put_buffer(out_val,2,1);
 	        case recieve_offer(store_num,'What price do you ask? ',
 				 new_offer,last_offer,-1) of
@@ -584,7 +584,7 @@ msg_print(' ');
 		        sell_haggle := 2;
 		        flag   := true;
 		      end;
-	          otherwise if (new_offer < cur_ask) then
+	          else if (new_offer < cur_ask) then
 	                      begin
 				prt_comment6;
 				loop_flag := false;
@@ -639,7 +639,7 @@ msg_print(' ');
 		        begin
 	                  last_offer := new_offer;
 		          prt('',2,1);
-	                  writev(out_val,'Your last bid   : ',last_offer:1);
+	                  WriteStr(out_val,'Your last bid   : ',last_offer:1);
 	                  put_buffer(out_val,2,40);
 			  prt_comment3(cur_ask,last_offer,final_flag);
 		        end;
@@ -653,7 +653,7 @@ msg_print(' ');
 
 
 	{ Buy an item from a store				-RAK-	}
-[psect(store$code)] function store_purchase(
+function store_purchase(
 			store_num 	: integer;
 			var cur_top 	: integer) : boolean;
       var
@@ -741,7 +741,7 @@ msg_print(' ');
 				end
 			    end;
 			2 : store_purchase := true;
-			otherwise ;
+			else ;
 		      end;
 		      prt('',2,1);
 		    end
@@ -755,7 +755,7 @@ msg_print(' ');
 
 
 	{ Sell an item to the store				-RAK-	}
-[psect(store$code)] function store_sell(store_num,cur_top : integer) : boolean;
+function store_sell(store_num,cur_top : integer) : boolean;
       var
 	item_val,i1			: integer;
 	item_pos,price			: integer;
@@ -801,7 +801,7 @@ msg_print(' ');
 			    msg_print('I will not buy that!');
 			    store_sell := increase_insults(store_num);
 		          end;
-		      otherwise ;
+		      else ;
 		    end
 		  else
 		    prt('I have not the room in my store to keep it...',1,1)
@@ -815,7 +815,7 @@ msg_print(' ');
 
 
 	{ Entering a store					-RAK-	}
-[psect(store$code)] procedure enter_store(store_num : integer);
+procedure enter_store(store_num : integer);
       var
 	com_val,cur_top			: integer;
 	command				: char;
@@ -871,7 +871,7 @@ msg_print(' ');
 				end;
 		      112     : exit_flag := store_purchase(store_num,cur_top);
 		      115     : exit_flag := store_sell(store_num,cur_top);
-		      otherwise prt('Invalid Command.',1,1);
+		      else prt('Invalid Command.',1,1);
 		    end;
 		  end
 		else

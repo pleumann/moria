@@ -1,5 +1,5 @@
 	{ Eat some food...					-RAK-	}
-[psect(misc2$code)] procedure eat;
+procedure eat;
       var
 		i1				: unsigned;
 		i2,i3,item_val			: integer;
@@ -131,7 +131,7 @@
 		    prt_chp;
 		    ident := true;
 		  end;
-	  otherwise ;
+	  else ;
 	end;
 	{ End of food actions...				}
 			end;
@@ -144,7 +144,7 @@
 			    prt_experience;
 			  end;
 		      add_food(p1);
-		      py.flags.status := uand(%X'FFFFFFFC',py.flags.status);
+		      py.flags.status := uand($FFFFFFFC,py.flags.status);
 		      prt_hunger;
 		      desc_remain(item_val);
 		      inven_destroy(item_val);

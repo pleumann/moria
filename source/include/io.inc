@@ -1,7 +1,7 @@
 	{ Convert an integer into a system bin time		-RAK-	}
 	{ NOTE: Int_time is number of 1/100 seconds			}
 	{	Max value = 5999					}
-[psect(misc2$code)] procedure convert_time(
+procedure convert_time(
 		    int_time	: unsigned;
 		var bin_time	: quad_type);
     type
@@ -9,9 +9,9 @@
     var
 	time_str	: time_type;
 	secs,tics	: unsigned;
-	out_val		: varying[2] of char;
+	out_val		: string[2];
 
-    [asynchronous,external(SYS$BINTIM)] function $bin_time(
+    function $bin_time(
 		%stdescr	give_str	: time_type;
 		var		slp_time	: quad_type
 						) : integer;
@@ -26,13 +26,13 @@
       if (secs > 0) then
 	begin
 	  if (secs > 59) then secs := 59;
-	  writev(out_val,secs:2);
+	  WriteStr(out_val,secs:2);
 	  time_str[10] := out_val[2];
 	  if (secs > 9) then time_str[9] := out_val[1];
 	end;
       if (tics > 0) then
 	begin
-	  writev(out_val,tics:2);
+	  WriteStr(out_val,tics:2);
 	  time_str[13] := out_val[2];
 	  if (tics > 9) then time_str[12] := out_val[1];
 	end;
@@ -41,7 +41,7 @@
 
 
 	{ Set timer for hibernation				-RAK-	}
-    [asynchronous,external(SYS$SETIMR)] function set_time(
+    function set_time(
 	%immed efn	: integer := %immed 5;
 	var bintime	: quad_type;
 	%ref astadr	: integer := %immed 0;
@@ -50,14 +50,14 @@
 
 
 	{ Hibernate 						-RAK-	}
-    [asynchronous,external(SYS$WAITFR)] function hibernate(
+    function hibernate(
 	%immed efn	: integer := %immed 5) : integer;
 	external;
 
 
 	{ Sleep for given time					-RAK-	}
 	{ NOTE: Int_time is in seconds					}
-[psect(misc2$code)] procedure sleep(int_time : unsigned);
+procedure sleep(int_time : unsigned);
     var
 	bin_time	: quad_type;
     begin
@@ -68,12 +68,12 @@
 
 
 	{ Setup system time format for io_pause.  		-RAK-	}
-	{ NOTE: IO$MOR_IOPAUSE is a constant				}
-	{	IO$BIN_PAUSE is a variable used to store results	}
+	{ NOTE: IO_MOR_IOPAUSE is a constant				}
+	{	IO_BIN_PAUSE is a variable used to store results	}
 	{ NOTE: Remove or comment out for VMS 4.0 or greater		}
-[psect(setup$code)] procedure setup_io_pause;
+procedure setup_io_pause;
     begin
-      convert_time(IO$MOR_IOPAUSE,IO$BIN_PAUSE);
+      convert_time(IO_MOR_IOPAUSE,IO_BIN_PAUSE);
     end;
 
 
@@ -81,7 +81,7 @@
 	{ This is needed if image is installed with SYSPRV because	}
 	{ user could write on system areas.  By turning the priv off	}
 	{ system areas are secure					}
-[psect(setup$code)] procedure priv_switch(switch_val : integer);
+procedure priv_switch(switch_val : integer);
     type
 	priv_field=	record	{ Quad word needed for priv mask}
 			  low	: unsigned;
@@ -91,7 +91,7 @@
 	priv_mask	: priv_field;
 
 	{ Turn off SYSPRV					-RAK-	}
-    [external(SYS$SETPRV)] function $setprv(
+    function $setprv(
 	%immed enbflg	: integer := %immed 0;
 	var privs	: priv_field;
 	%immed prmflg	: integer := %immed 0;
@@ -99,14 +99,14 @@
 	external;
 
     begin
-      priv_mask.low  := %X'10000000';	{ SYSPRV	}
-      priv_mask.high := %X'00000000';
+      priv_mask.low  := $10000000;	{ SYSPRV	}
+      priv_mask.high := $00000000;
       $setprv(enbflg:=switch_val,privs:=priv_mask);
     end;
 
 
 	{ Spawn a shell						-RAK-	}
-    [external(LIB$SPAWN)] function shell_out(
+    function shell_out(
 	command_str	: integer := %immed 0;
 	input_file 	: integer := %immed 0;
 	output_file	: integer := %immed 0;
@@ -121,33 +121,33 @@
 
 
 	{ Turn off Control-Y					-RAK-	}
-[psect(setup$code)] procedure no_controly;
+procedure no_controly;
     var
 	bit_mask	: unsigned;
 
-    [external(LIB$DISABLE_CTRL)] function y_off(
+    function y_off(
 	var mask	: unsigned;
 	    old_mask	: integer := %immed 0) : integer;
 	external;
 
     begin
-      bit_mask := %X'02000000';	{ No Control-Y	}
+      bit_mask := $02000000;	{ No Control-Y	}
       y_off(mask:=bit_mask);
     end;
 
 
 	{ Turn on Control-Y					-RAK-	}
-[psect(setup$code)] procedure controly;
+procedure controly;
     var
 	bit_mask	: unsigned;
 
-    [external(LIB$ENABLE_CTRL)] function y_on(
+    function y_on(
 	var mask	: unsigned;
 	    old_mask	: integer := %immed 0) : integer;
 	external;
 
     begin
-      bit_mask := %X'02000000';	{ Control-Y	}
+      bit_mask := $02000000;	{ Control-Y	}
       y_on(mask:=bit_mask);
     end;
 
@@ -155,7 +155,7 @@
 	{ Dump IO to buffer					-RAK-	}
 	{ NOTE: Source is PUTQIO.MAR					}
   procedure put_buffer		(
-		%ref	out_str	:	varying [a] of char;
+		%ref	out_str	:	string[a];
 		%immed	row	:	integer;
 		%immed	col	:	integer
 				);
@@ -168,10 +168,10 @@
 	external;
 
 
-[psect(setup$code)] procedure exit;
+procedure exit;
 
 	{ Immediate exit from program					}
-  [external(SYS$EXIT)] function $exit(
+  function $exit(
 	%immed status	: integer := %immed 1) : integer;
 	external;
 
@@ -183,16 +183,16 @@
 
 
 	{ Initializes I/O channel for use with INKEY			}
-[psect(setup$code)] procedure init_channel;
+procedure init_channel;
     type
       ttype = packed array [1..3] of char;
     var
       status		: integer;
       terminal		: ttype;
 
-  [external(SYS$ASSIGN)] function assign(
+  function assign(
 	%stdescr terminal	: ttype;
-	var channel		: [volatile] integer;
+	var channel		: integer;
 	acmode			: integer := %immed 0;
 	mbxnam	  		: integer := %immed 0) : integer; 
 	external;
@@ -209,14 +209,14 @@
 
 
 	{ QIOW definition					-RAK-	}
-  [asynchronous,external(SYS$QIOW)] function qiow_read(
+  function qiow_read(
 	%immed efn		: integer := %immed 1;
 	%immed chan  		: integer;
 	%immed func		: integer := %immed 0;
 	%immed isob		: integer := %immed 0;
 	%immed astadr		: integer := %immed 0;
 	%immed astprm		: integer := %immed 0;
-	%ref get_char		: [unsafe] char := %immed 0;
+	%ref get_char		: char := %immed 0;
 	%immed buff_len		: integer := %immed 0;
 	%immed delay_time	: integer := %immed 0;
 	%immed p4		: integer := %immed 0;
@@ -225,18 +225,18 @@
 	external;
 
 	{ Gets single character from keyboard and returns		}
-[psect(io$code)] procedure inkey(var getchar : char);
+procedure inkey(var getchar : char);
     var
 	status			: integer;
     begin
       put_qio;			{ Dump IO buffer		}
 	{ Allow device driver to catch up			}
 	{ NOTE: Remove or comment out for VMS 4.0 or greater	}
-      set_time(bintime:=IO$BIN_PAUSE);
+      set_time(bintime:=IO_BIN_PAUSE);
       hibernate;
 	{ Now read				}
       qiow_read(chan:=channel,
-		func:=IO$MOR_INPUT,
+		func:=IO_MOR_INPUT,
 		get_char:=getchar,
 		buff_len:=1	);
       msg_flag := false;
@@ -244,7 +244,7 @@
 
 
 	{ Gets single character from keyboard and returns		}
-[psect(io$code)] procedure inkey_delay	(
+procedure inkey_delay	(
 			var getchar	: char;
 			delay		: integer
 					);
@@ -254,12 +254,12 @@
       put_qio;			{ Dump the IO buffer		}
 	{ Allow device driver to catch up			}
 	{ NOTE: Remove or comment out for VMS 4.0 or greater	}
-      set_time(bintime:=IO$BIN_PAUSE);
+      set_time(bintime:=IO_BIN_PAUSE);
       hibernate;
 	{ Now read				}
       getchar := null;		{ Blank out return character	}
       qiow_read(chan:=channel,
-		func:=IO$MOR_DELAY,
+		func:=IO_MOR_DELAY,
 		get_char:=getchar,
 		buff_len:=1,
 		delay_time:=delay );
@@ -267,19 +267,19 @@
 
 
 	{ Flush the buffer					-RAK-	}
-[psect(io$code)] procedure flush;
+procedure flush;
     begin
 	{ Allow device driver to catch up			}
 	{ NOTE: Remove or comment out for VMS 4.0 or greater	}
-      set_time(bintime:=IO$BIN_PAUSE);
+      set_time(bintime:=IO_BIN_PAUSE);
       hibernate;
 	{ Now flush				}
-      qiow_read(chan:=channel,func:=IO$MOR_IPURGE);
+      qiow_read(chan:=channel,func:=IO_MOR_IPURGE);
     end;
 
 
 	{ Flush buffer before input				-RAK-	}
-[psect(io$code)] procedure inkey_flush(var x : char);
+procedure inkey_flush(var x : char);
     begin
       put_qio;	{ Dup the IO buffer	}
       if (not(wizard1)) then flush;
@@ -288,7 +288,7 @@
 
 
 	{ Retrieves foreign string input with game command	-JWT-	}
-  [external(LIB$GET_FOREIGN)] procedure get_foreign(
+  procedure get_foreign(
 	%descr msg_str		: vtype;
 	%descr prompt		: vtype   := %immed 0;
 	%ref len		: integer := %immed 0); 
@@ -296,7 +296,7 @@
 
 
 	{ Clears given line of text				-RAK-	}
-[psect(io$code)] procedure erase_line		(
+procedure erase_line		(
 		row		:	integer;
 		col		:	integer
 				);
@@ -306,7 +306,7 @@
 
 
 	{ Clears screen at given row, column				}
-[psect(io$code)] procedure clear(row,col : integer);
+procedure clear(row,col : integer);
     var
 	i1			: integer;
     begin
@@ -317,8 +317,8 @@
 
 
 	{ Outputs a line to a given interpolated y,x position	-RAK-	}
-[psect(io$code)] procedure print(
-		str_buff	: varying[a] of char;
+procedure print(
+		str_buff	: string[a];
 		row		: integer;
 		col		: integer
 				);
@@ -331,8 +331,8 @@
 
 
 	{ Outputs a line to a given y,x position		-RAK-	}
-[psect(io$code)] procedure prt(
-		str_buff	: varying[a] of char;
+procedure prt(
+		str_buff	: string[a];
 		row		: integer;
 		col		: integer
 				);
@@ -342,7 +342,7 @@
 
 
 	{ Outputs message to top line of screen				}
-[psect(io$code)] procedure msg_print(str_buff	: varying[a] of char);
+procedure msg_print(str_buff	: string[a]);
     var
 	old_len		: integer;
 	in_char		: char;
@@ -363,8 +363,8 @@
 
 	{ Prompts (optional) and returns ord value of input char	}
 	{ Function returns false if <ESCAPE>,CNTL/(Y,C,Z) is input	}
-[psect(io$code)] function get_com	(
-				prompt		: varying[a] of char;
+function get_com	(
+				prompt		: string[a];
 				var command	: char
 					) : boolean;
     var
@@ -375,7 +375,7 @@
       com_val := ord(command);
       case com_val of
 	3,25,26,27	: get_com := false;
-	otherwise	  get_com := true;
+	else	  get_com := true;
       end;
       erase_line(msg_line,msg_line);
       msg_flag := false;
@@ -384,8 +384,8 @@
 
 	{ Gets a string terminated by <RETURN>				}
 	{ Function returns false if <ESCAPE>,CNTL/(Y,C,Z) is input	}
-[psect(io$code)] function get_string	(
-			var in_str	: varying[a] of char;
+function get_string	(
+			var in_str	: string[a];
 			row,column,slen : integer
 					) : boolean;
     var
@@ -415,7 +415,7 @@
 			      in_str := substr(in_str,1,length(in_str)-1);
 			    end;
 			end;
-	 otherwise	begin
+	 else	begin
 			  tmp := x;
 			  put_buffer(tmp,row,column);
 			  in_str := in_str + tmp;
@@ -442,7 +442,7 @@
 
 
 	{ Return integer value of hex string			-RAK-	}
-[psect(wizard$code)] function get_hex_value(row,col,slen : integer) : integer;
+function get_hex_value(row,col,slen : integer) : integer;
     type
 	pack_type		= packed array [1..9] of char;
     var
@@ -450,7 +450,7 @@
 	tmp_str			: vtype;
 	pack_str		: pack_type;
 
-    [asynchronous,external(OTS$CVT_TZ_L)] function convert_hex_to_bin(
+    function convert_hex_to_bin(
 		%stdescr hex_str	: pack_type;
 		%ref	 hex_val 	: integer;
 		%immed	 val_size	: integer := %immed 4;
@@ -471,7 +471,7 @@
 
 
 	{ Pauses for user response before returning		-RAK-	}
-[psect(misc2$code)] procedure pause(prt_line : integer);
+procedure pause(prt_line : integer);
     var
 	dummy			: char;
     begin
@@ -484,7 +484,7 @@
 	{ Pauses for user response before returning		-RAK-	}
 	{ NOTE: Delay is for players trying to roll up "perfect"	}
 	{	characters.  Make them wait a bit...			}
-[psect(misc2$code)] procedure pause_exit(
+procedure pause_exit(
 		prt_line	: integer;
 		delay		: integer);
     var
@@ -506,13 +506,13 @@
 
 	{ Returns the image path for Moria			-RAK-	}
 	{ Path is returned in a VARYING[80] of char			}
-[psect(setup$code)] procedure get_paths;
+procedure get_paths;
     type
 	word	= 0..65535;
 	rec_jpi	= record
 			pathinfo : packed record
 				     pathlen		: word;
-				     jpi$_imagname	: word;
+				     jpi__imagname	: word;
 		  		   end;
 			ptr_path	: ^path;
 			ptr_pathlen	: ^integer;
@@ -533,7 +533,7 @@
 	jpirec		: rec_jpi;
 
 	{ GETJPI definition	}
-      [asynchronous,external(SYS$GETJPI)] function $getjpi(
+      function $getjpi(
 		%immed	p1	: integer := %immed 0;
 		%immed	p2	: integer := %immed 0;
 		%immed	p3	: integer := %immed 0;
@@ -547,7 +547,7 @@
 	with jpirec do
 	  begin
 	    pathinfo.pathlen		:= 128;		{ Image length	}
-	    pathinfo.jpi$_imagname	:= %x207;	{ Image path	}
+	    pathinfo.jpi__imagname	:= %x207;	{ Image path	}
 	    new (ptr_path);
 	    pad(ptr_path^,' ',128);
 	    new (ptr_pathlen);

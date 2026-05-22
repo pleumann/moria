@@ -1,11 +1,11 @@
 	{ Handles the gravestone and top-twenty routines	-RAK-	}
-[psect(death$code)] procedure upon_death;
+procedure upon_death;
     type
 	word	= 0..65535;
 	recj	= record
 			unameinfo	: packed record
 				unamelen	: word;
-				jpi$_username	: word;
+				jpi__username	: word;
 			end;
 			ptr_uname	: ^usernam;
 			ptr_unamelen	: ^integer;
@@ -22,7 +22,7 @@
 	jpirec		: recj;
 
 	{ calls GETJPI routine to return the USERNAME		-JWT-	}
-      function sys$getjpi	(%immed	p1	: integer;
+      function sys_getjpi	(%immed	p1	: integer;
 			 	%immed	p2	: integer;
 			 	%immed	p3	: integer;
 			 	var	itmlst	: recj;
@@ -35,14 +35,14 @@
 	with jpirec do
 	  begin
 	    unameinfo.unamelen		:= 12;
-	    unameinfo.jpi$_username	:= %x202;
+	    unameinfo.jpi__username	:= %x202;
 	    new (ptr_uname);
 	    ptr_uname^			:= '            ';
 	    new (ptr_unamelen);
 	    ptr_unamelen^		:= 0;
 	    endlist			:= 0
 	  end;
-	icode := SYS$GETJPI (0,0,0,jpirec,0,0,0);
+	icode := SYS_GETJPI (0,0,0,jpirec,0,0,0);
 	if not odd(icode) then
 	  begin
 	    writeln('Error in GETJPI process');
@@ -124,13 +124,13 @@
 	str1 := fill_str(py.misc.name);
 	str2 := fill_str(py.misc.title);
 	str3 := fill_str(py.misc.tclass);
-        writev(str4,'Level : ',py.misc.lev:1);
+        WriteStr(str4,'Level : ',py.misc.lev:1);
 	str4 := fill_str(str4);
-        writev(str5,py.misc.exp:1,' Exp');
+        WriteStr(str5,py.misc.exp:1,' Exp');
 	str5 := fill_str(str5);
-	writev(str6,py.misc.au:1,' Au');
+	WriteStr(str6,py.misc.au:1,' Au');
 	str6 := fill_str(str6);
-	writev(str7,'Died on Level : ',dun_level:1);
+	WriteStr(str7,'Died on Level : ',dun_level:1);
 	str7 := fill_str(str7);
 	str8 := fill_str(died_from);
 dstr[00] := ' ';
@@ -166,23 +166,23 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 			  if (get_string(fnam,1,17,60)) then
 			    begin
 			      if (length(fnam) = 0) then fnam:='MORIACHR.DIE';
-			      open (f1,file_name:=fnam,error:=continue);
+			      open (f1,file_name:=fnam);
 			      if (status(f1) <> 0) then
 			        prt('Error creating> ' + fnam,2,1)
 			      else
 			        begin
 				  flag := true;
-				  rewrite(f1,error:=continue);
+				  rewrite(f1);
 				  for i1 := 0 to 19 do
-				    writeln(f1,dstr[i1],error:=continue);
+				    writeln(f1,dstr[i1]);
 				end;
-			      close(f1,error:=continue);
+			      close(f1);
 	  		    end
 			  else
 			    flag := true;
 			until(flag);
 		      end;
-	    otherwise ;
+	    else ;
 	  end;
       end;
 
@@ -218,7 +218,7 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 	repeat
 	  open (f1,file_name:=moria_top,
 		organization:=sequential,history:=old,
-		sharing:=none,error:=continue);
+		sharing:=none);
 	  if (status(f1) = 2) then
 	    begin
 	      trys := trys + 1;
@@ -233,7 +233,7 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 	if ((status(f1) <> 0) and (status(f1) <> 2)) then 
 	  open (f1,file_name:=moria_top,
 		organization:=sequential,history:=new,
-		sharing:=none,error:=continue);
+		sharing:=none);
 	if (status(f1) <> 0) then
 	  begin
 	    writeln('Error in opening ',moria_top);
@@ -243,7 +243,7 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 	reset(f1);
 	while ((not eof(f1)) and (n1 <= 20)) do
 	  begin
-	    readln(f1,list[n1],error:=continue);
+	    readln(f1,list[n1]);
 	    n1 := n1 + 1;
 	  end;
 	n1 := n1 - 1;
@@ -252,7 +252,7 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 	flag := false;
 	while ((i1 <= n1) and (not flag)) do
 	  begin
-	    readv(list[i1],blank,i4);
+	    ReadStr(list[i1],blank,i4);
 	    if (i4 < i3) then
 	      flag := true
 	    else
@@ -264,12 +264,12 @@ dstr[19] := '________)/\\_)_/___(\/___(//_\)/_\//__\\(/_|_)_______';
 	      list[i2+1] := list[i2];
 	    o1 := get_username;
 	    case py.misc.lev of
-	      1		: writev(o2,py.misc.lev:1,'st level ');
-	      2		: writev(o2,py.misc.lev:1,'nd level ');
-	      3		: writev(o2,py.misc.lev:1,'rd level ');
-	      otherwise	  writev(o2,py.misc.lev:1,'th level ');
+	      1		: WriteStr(o2,py.misc.lev:1,'st level ');
+	      2		: WriteStr(o2,py.misc.lev:1,'nd level ');
+	      3		: WriteStr(o2,py.misc.lev:1,'rd level ');
+	      else	  WriteStr(o2,py.misc.lev:1,'th level ');
 	    end;
-	    writev(list[i1],pad(o1,' ',13),i3:7,'  ',
+	    WriteStr(list[i1],pad(o1,' ',13),i3:7,'  ',
 		py.misc.name,', a ',o2,py.misc.race,' ',
 		py.misc.tclass,'.');
 	    if (n1 < 20) then

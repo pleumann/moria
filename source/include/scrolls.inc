@@ -1,5 +1,5 @@
 	{ Scrolls for the reading				-RAK-	}
-[psect(misc2$code)] procedure read;
+procedure read;
       var
 		i1                              : unsigned;
 		i2,i3,i4,item_val               : integer;
@@ -54,7 +54,7 @@
 		      msg_print('Your ' + out_val + ' glows faintly!');
 		      if (enchant(tohit)) then
 			begin
-			  flags := uand(%X'7FFFFFFF',flags);
+			  flags := uand($7FFFFFFF,flags);
 			  py_bonuses(blank_treasure,0);
 			end
 		      else
@@ -70,7 +70,7 @@
 		      msg_print('Your ' + out_val + ' glows faintly!');
 		      if (enchant(todam)) then
 			begin
-			  flags := uand(%X'7FFFFFFF',flags);
+			  flags := uand($7FFFFFFF,flags);
 			  py_bonuses(blank_treasure,0);
 			end
 		      else
@@ -107,15 +107,15 @@
 		      tmp[i3] := 24;
 		    end;
 		  if (i3 > 0) then i4 := tmp[randint(i3)];
-		  if (uand(%X'80000000',inventory[26].flags) <> 0) then
+		  if (uand($80000000,inventory[26].flags) <> 0) then
 		    i4 := 26
-		  else if (uand(%X'80000000',inventory[27].flags) <> 0) then
+		  else if (uand($80000000,inventory[27].flags) <> 0) then
 		    i4 := 27
-		  else if (uand(%X'80000000',inventory[32].flags) <> 0) then
+		  else if (uand($80000000,inventory[32].flags) <> 0) then
 		    i4 := 32
-		  else if (uand(%X'80000000',inventory[24].flags) <> 0) then
+		  else if (uand($80000000,inventory[24].flags) <> 0) then
 		    i4 := 24
-		  else if (uand(%X'80000000',inventory[28].flags) <> 0) then
+		  else if (uand($80000000,inventory[28].flags) <> 0) then
 		    i4 := 28;
 		  if (i4 > 0) then
 		    with inventory[i4] do
@@ -124,7 +124,7 @@
 			msg_print('Your ' + out_val + ' glows faintly!');
 			if (enchant(toac)) then
 			  begin
-			    flags := uand(%X'7FFFFFFF',flags);
+			    flags := uand($7FFFFFFF,flags);
 			  py_bonuses(blank_treasure,0);
 			  end
 			else
@@ -207,7 +207,7 @@
 	  27 :  ident := unlight_area(char_row,char_col);
 	  28 :  ident := protect_evil;
 	  29 :  ident := create_food;
-	  30 :  ident := dispell_creature(%X'0008',60);
+	  30 :  ident := dispell_creature($0008,60);
 	  31 :  begin
 		  msg_print('That scroll appeared to be blank.');
 		  ident := true;
@@ -227,7 +227,7 @@
 			  flag := true;
 		      if (flag) then
 			begin
-			  flags := uand(%X'7FFFFFFF',flags);
+			  flags := uand($7FFFFFFF,flags);
 			  py_bonuses(blank_treasure,0);
 			end
 		      else
@@ -245,21 +245,21 @@
 				' glows black, then fades.');
 			tohit := -randint(5) - randint(5);
 			todam := -randint(5) - randint(5);
-			flags := %X'80000000';
+			flags := $80000000;
 			py_bonuses(inventory[inven_max],-1);
 			ident := true;
 		      end;
 		  end;
 	  34 :  begin
-		  if (uand(%X'80000000',inventory[26].flags) <> 0) then
+		  if (uand($80000000,inventory[26].flags) <> 0) then
 		    i3 := 26
-		  else if (uand(%X'80000000',inventory[27].flags) <> 0) then
+		  else if (uand($80000000,inventory[27].flags) <> 0) then
 		    i3 := 27
-		  else if (uand(%X'80000000',inventory[32].flags) <> 0) then
+		  else if (uand($80000000,inventory[32].flags) <> 0) then
 		    i3 := 32
-		  else if (uand(%X'80000000',inventory[24].flags) <> 0) then
+		  else if (uand($80000000,inventory[24].flags) <> 0) then
 		    i3 := 24
-		  else if (uand(%X'80000000',inventory[28].flags) <> 0) then
+		  else if (uand($80000000,inventory[28].flags) <> 0) then
 		    i3 := 28
 		  else if (inventory[26].tval > 0) then
 		    i3 := 26
@@ -282,7 +282,7 @@
 			    flag := true;
 			if (flag) then
 			  begin
-			    flags := uand(%X'7FFFFFFF',flags);
+			    flags := uand($7FFFFFFF,flags);
 			  py_bonuses(blank_treasure,0);
 			  end
 			else
@@ -320,7 +320,7 @@
 			objdes(out_val,i3,false);
 		      msg_print('Your ' + out_val +
 				' glows black, then fades.');
-			flags := %X'80000000';
+			flags := $80000000;
 			toac := -randint(5) - randint(5);
 			py_bonuses(inventory[inven_max],-1);
 			ident := true;
@@ -365,7 +365,7 @@
 	  60 :  ;
 	  61 :  ;
 	  62 :  ;
-	  otherwise ;
+	  else ;
 	end;
 	{ End of Scrolls...                                     }
 			  end;

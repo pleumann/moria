@@ -1,5 +1,5 @@
 	{ Wands for the aiming...				}
-[psect(misc2$code)] procedure aim;
+procedure aim;
       var
 		i1                              : unsigned;
 		i2,i3,i4,chance                 : integer;
@@ -105,7 +105,7 @@
 		  ident := true;
 		end;
 	  24 :  i1 := 2**(randint(24) - 1);
-	  otherwise ;
+	  else ;
 	end;
 	{ End of Wands...                                       }
 				end;

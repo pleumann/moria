@@ -1,5 +1,5 @@
 	{ Use a staff...					-RAK-	}
-[psect(misc2$code)] procedure use;
+procedure use;
       var
 		i1				: unsigned;
 		i2,i3,item_val,chance		: integer;
@@ -78,10 +78,10 @@
 	  21 :	ident := detect_evil;
 	  22 :	if ((cure_blindness) or (cure_poison) or (cure_confusion)) then
 		  ident := true;
-	  23 :	ident := dispell_creature(%X'0004',60);
+	  23 :	ident := dispell_creature($0004,60);
 	  24 :	ident := mass_genocide;
 	  25 :	ident := unlight_area(char_row,char_col);
-	  otherwise ;
+	  else ;
 	end;
 	{ End of staff actions...				}
 			      end;

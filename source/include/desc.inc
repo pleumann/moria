@@ -1,7 +1,7 @@
 	{ Object descriptor routines					}
 
 	{ Randomize colors, woods, and metals				}
-[psect(setup$code)] procedure randes;
+procedure randes;
     var
 	i1,i2		: integer;
 	tmp		: vtype;
@@ -52,8 +52,8 @@
 
 
 	{ Return random title						}
-[psect(setup$code)] procedure rantitle	(
-			var title	: varying[a] of char
+procedure rantitle	(
+			var title	: string[a]
 					);
     var
 	i1,i2,i3	: integer;
@@ -71,7 +71,7 @@
 
 
 	{ Initialize all Potions, wands, staves, scrolls, ect...	}
-[psect(setup$code)] procedure magic_init(random_seed : unsigned);
+procedure magic_init(random_seed : unsigned);
     var
 	i1,tmpv		: integer;
 	tmps		: vtype;
@@ -80,7 +80,7 @@
       randes;
       for i1 := 1 to max_objects do
 	begin
-	  tmpv := int(uand(%X'FF',object_list[i1].subval));
+	  tmpv := int(uand($FF,object_list[i1].subval));
 	  case object_list[i1].tval of
 	     75,76 : if (tmpv <= max_colors) then
 		       insert_str(object_list[i1].name,'%C',colors[tmpv]);
@@ -100,15 +100,15 @@
 		       insert_str(object_list[i1].name,'%M',mushrooms[tmpv]);
 		60 : {if (tmpv <= max_rods) then
 		       insert_str(object_list[i1].name,'%D',rods[tmpv])};
-		otherwise ;
+		else ;
 	  end
 	end
     end;
 
 
 	{ Remove 'Secret' symbol for identity of object			}
-[psect(misc1$code)] procedure known1	(
-			var object_str	: varying[a] of char
+procedure known1	(
+			var object_str	: string[a]
 					);
     var
 	pos,olen	: integer;
@@ -120,14 +120,14 @@
 	  olen := length(object_str);
 	  str1 := substr(object_str,1,pos-1);
 	  str2 := substr(object_str,pos+1,olen-pos);
-	  writev(object_str,str1,str2);
+	  WriteStr(object_str,str1,str2);
 	end;
     end;
 
 
 	{ Remove 'Secret' symbol for identity of pluses			}
-[psect(misc1$code)] procedure known2	(
-			var object_str	: varying[a] of char
+procedure known2	(
+			var object_str	: string[a]
 					);
     var
 	pos,olen	: integer;
@@ -139,14 +139,14 @@
 	  olen := length(object_str);
 	  str1 := substr(object_str,1,pos-1);
 	  str2 := substr(object_str,pos+1,olen-pos);
-	  writev(object_str,str1,str2);
+	  WriteStr(object_str,str1,str2);
 	end;
     end;
 
 
 	{ Return string without quoted portion				}
-[psect(misc1$code)] procedure unquote	(
-			var object_str	: varying[a] of char
+procedure unquote	(
+			var object_str	: string[a]
 					);
     var
 	pos0,pos1,pos2,olen	: integer;
@@ -160,14 +160,14 @@
 	  olen := length(object_str);
 	  str1 := substr(object_str,1,pos1);
 	  str2 := substr(object_str,pos2+1,olen-pos2);
-	  writev(object_str,str1,str2);
+	  WriteStr(object_str,str1,str2);
 	end
     end;
 	  
 
 
 	{ Somethings been identified					}
-[psect(misc1$code)] procedure identify(item : treasure_type);
+procedure identify(item : treasure_type);
     var
 	i1,x1,x2		: integer;
     begin
@@ -211,8 +211,8 @@
 
 
 	{ Returns a description of item for inventory			}
-[psect(misc1$code)] procedure objdes(
-		var out_val 	: varying[a] of char;
+procedure objdes(
+		var out_val 	: string[a];
 		    ptr 	: integer;
 		    pref 	: boolean);
     var
@@ -253,13 +253,13 @@
 	        begin
 	          insert_str(tmp_val,'&','');
 	          if (number > 1) then
-	            writev(out_val,number:1,tmp_val)
+	            WriteStr(out_val,number:1,tmp_val)
 		  else if (number < 1) then
-		    writev(out_val,'no more',tmp_val)
+		    WriteStr(out_val,'no more',tmp_val)
 	          else if (tmp_val[2] in vowel_set) then
-	            writev(out_val,'an',tmp_val)
+	            WriteStr(out_val,'an',tmp_val)
 	          else
-	            writev(out_val,'a',tmp_val);
+	            WriteStr(out_val,'a',tmp_val);
 	        end
 	      else
 	        out_val := tmp_val;

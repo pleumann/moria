@@ -1,5 +1,5 @@
 	{ Throw a magic spell					-RAK-	}
-[psect(misc2$code)] procedure cast;
+procedure cast;
       var
 		i1,i2,item_val,dir              : integer;
 		choice,chance                   : integer;
@@ -60,7 +60,7 @@
 	  13 :  teleport(py.misc.lev*5);
 	  14 :  for i1 := 23 to inven_max-1 do
 		  with inventory[i1] do
-		    flags := uand(flags,%X'7FFFFFFF');
+		    flags := uand(flags,$7FFFFFFF);
 	  15 :  if (get_dir('Which direction?',dir,dumy,y_dumy,x_dumy)) then
 		  fire_bolt(4,dir,char_row,char_col,
 					damroll('4d8')+1,'Frost Bolt');
@@ -89,7 +89,7 @@
 		  fire_ball(5,dir,char_row,char_col,49,'Fire Ball');
 	  30 :  destroy_area(char_row,char_col);
 	  31 :  genocide;
-	  otherwise ;
+	  else ;
 	end;
 	{ End of spells...                              }
 				if (not(reset_flag)) then

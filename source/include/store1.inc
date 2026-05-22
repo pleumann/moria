@@ -1,5 +1,5 @@
 	{ Returns the value for any given object		-RAK-	}
-[psect(store$code)] function item_value(item : treasure_type) : integer;
+function item_value(item : treasure_type) : integer;
 
       function search_list(x1,x2 : integer) : integer;
 	var
@@ -66,7 +66,7 @@
 		    70,71 : item_value :=  20;
 		    75,76 : item_value :=  20;
 		    80    : item_value :=   1;
-		    otherwise ;
+		    else ;
 		  end
 	      end
 	    else if (tval in [40,45]) then
@@ -75,7 +75,7 @@
 		  case tval of
 		    40 : item_value := 45;
 		    45 : item_value := 45;
-		    otherwise ;
+		    else ;
 		  end
 		else if (index(name,'^') > 0) then
 		  item_value := abs(cost);
@@ -87,7 +87,7 @@
 		    55 : item_value := 70;
 		    60 : item_value := 60;
 		    65 : item_value := 50;
-		    otherwise ;
+		    else ;
 		  end
 		else if (index(name,'^') = 0) then
 		  begin
@@ -99,7 +99,7 @@
 
 
 	{ Asking price for an item				-RAK-	}
-[psect(store$code)] function sell_price (snum 	: integer;
+function sell_price (snum 	: integer;
 			 var max_sell,min_sell 	: integer;
 			 item 			: treasure_type
 					) : integer;
@@ -130,7 +130,7 @@
 
 
 	{ Check to see if he will be carrying too many objects	-RAK-	}
-[psect(store$code)] function store_check_num(store_num : integer) : boolean;
+function store_check_num(store_num : integer) : boolean;
       var
 	item_num,i1			: integer;
 	flag				: boolean;
@@ -150,7 +150,7 @@
 
 
 	{ Add the item in INVEN_MAX to stores inventory.	-RAK-	}
-[psect(store$code)] procedure store_carry(    store_num : integer;
+procedure store_carry(    store_num : integer;
 					  var ipos 	: integer);
       var
 	item_num,item_val		: integer;
@@ -221,7 +221,7 @@
 
 	{ Destroy an item in the stores inventory.  Note that if	}
 	{ 'one_of' is false, an entire slot is destroyed	-RAK-	}
-[psect(store$code)] procedure store_destroy(
+procedure store_destroy(
 			store_num,item_val 	: integer; 
 			one_of 			: boolean);
       var
@@ -252,7 +252,7 @@
 
 
 	{ Initializes the stores with owners			-RAK-	}
-[psect(setup$code)] procedure store_init;
+procedure store_init;
       var
 	i1,i2,i3			: integer;
       begin
@@ -274,7 +274,7 @@
 
 
 	{ Creates an item and inserts it into store's inven	-RAK-	}
-[psect(store$code)] procedure store_create(store_num : integer);
+procedure store_create(store_num : integer);
       var
 	i1,tries,cur_pos,dummy			: integer;
       begin
@@ -282,7 +282,7 @@
 	popt(cur_pos);
 	with store[store_num] do
 	  repeat
-	    i1 := store_choice[store_num,randint(store$choices)];
+	    i1 := store_choice[store_num,randint(store_choices)];
 	    t_list[cur_pos] := inventory_init[i1];
 	    magic_treasure(cur_pos,obj_town_level);
 	    inventory[inven_max] := t_list[cur_pos];
@@ -301,7 +301,7 @@
 
 
 	{ Initialize and up-keep the store's inventory.		-RAK-	}
-[psect(store$code)] procedure store_maint;
+procedure store_maint;
       var
 	i1,i2,dummy		: integer;
       begin
@@ -309,19 +309,19 @@
 	  with store[i1] do
 	    begin
 	      insult_cur := 0;
-	      if (store_ctr > store$max_inven) then
-	        for i2 := 1 to (store_ctr-store$max_inven+2) do
+	      if (store_ctr > store_max_inven) then
+	        for i2 := 1 to (store_ctr-store_max_inven+2) do
 		  store_destroy(i1,randint(store_ctr),false)
-	      else if (store_ctr < store$min_inven) then
+	      else if (store_ctr < store_min_inven) then
 		begin
-	          for i2 := 1 to (store$min_inven-store_ctr+2) do
+	          for i2 := 1 to (store_min_inven-store_ctr+2) do
 		    store_create(i1);
 		end
 	      else
 		begin
-		  for i2 := 1 to (1+randint(store$turn_around)) do
+		  for i2 := 1 to (1+randint(store_turn_around)) do
 		    store_destroy(i1,randint(store_ctr),true);
-		  for i2 := 1 to (1+randint(store$turn_around)) do
+		  for i2 := 1 to (1+randint(store_turn_around)) do
 		    store_create(i1);
 		end;
 	    end;

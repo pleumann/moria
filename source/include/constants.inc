@@ -12,22 +12,22 @@ const
 	cur_version   = 4.8;
 
 	{ QIOW constants, see $IODEF in STARLET.MLB			}
-	IO$_WRITEVBLK = %B'0000000000110000';   {  48D, 0030H   }
-	IO$_TTYREADALL= %B'0000000000111010';   {  58D, 003AH   }
-	IO$M_NOECHO   = %B'0000000001000000';   {  64D, 0040H   }
-	IO$M_NOWAIT   = %B'0000000010000000';   { 128D, 0080H   }
-	IO$M_PURGE    = %B'0000100000000000';   {2048D, 0800H   }
-	IO$MOR_OUTPUT = IO$_WRITEVBLK;
-	IO$MOR_INPUT  = IO$_TTYREADALL + IO$M_NOECHO;
-	IO$MOR_DELAY  = IO$MOR_INPUT   + IO$M_NOWAIT;
-	IO$MOR_IPURGE = IO$MOR_DELAY   + IO$M_PURGE;
+	IO__WRITEVBLK = %0000000000110000;   {  48D, 0030H   }
+	IO__TTYREADALL= %0000000000111010;   {  58D, 003AH   }
+	IO_M_NOECHO   = %0000000001000000;   {  64D, 0040H   }
+	IO_M_NOWAIT   = %0000000010000000;   { 128D, 0080H   }
+	IO_M_PURGE    = %0000100000000000;   {2048D, 0800H   }
+	IO_MOR_OUTPUT = IO__WRITEVBLK;
+	IO_MOR_INPUT  = IO__TTYREADALL + IO_M_NOECHO;
+	IO_MOR_DELAY  = IO_MOR_INPUT   + IO_M_NOWAIT;
+	IO_MOR_IPURGE = IO_MOR_DELAY   + IO_M_PURGE;
 
 	{ IO bug exists at high baud rates (baud >= 9600).  This bug	}
 	{ is believed to be in the device driver.  It can be avoided by }
 	{ hibernating the process a small amount of time before perform-}
 	{ ing a QIOW read operation.                            -RAK-   }
 	{ This constant no longer used after VMS 4.0                    }
-	IO$MOR_IOPAUSE= 5;      { x/100 seconds of sleep before inkey   }
+	IO_MOR_IOPAUSE= 5;      { x/100 seconds of sleep before inkey   }
 
 	{ Encryption constants						}
 	{ Note: These numbers were pulled from the air, and can be      }
@@ -68,10 +68,10 @@ const
 	max_owners      = 18;   { Number of owners to choose from       }
 	max_stores      = 6;    { Number of different stores            }
 	store_inven_max = 24;   { Max number of discrete objs in inven  }
-	store$choices   = 26;   { Number of items to choice stock from  }
-	store$max_inven = 20;   { Max diff objs in stock before auto sell}
-	store$min_inven = 14;   { Min diff objs in stock before auto buy}
-	store$turn_around= 3;   { Amount of buying and selling normally }
+	store_choices   = 26;   { Number of items to choice stock from  }
+	store_max_inven = 20;   { Max diff objs in stock before auto sell}
+	store_min_inven = 14;   { Min diff objs in stock before auto buy}
+	store_turn_around= 3;   { Amount of buying and selling normally }
 	inven_init_max  = 105;  { Size of store init array              }
 	cost_adj        = 1.00; { Adjust prices for buying and selling  }
 
@@ -98,9 +98,9 @@ const
 	obj_div_cursed  = 1.3;  { magic_chance/# = cursed items         }
 
 	{ Constants describing limits of certain objects		}
-	obj$lamp_max    =15000; { Maximum amount that lamp can be filled}
-	obj$bolt_range  = 18;   { Maximum range of bolts and balls      }
-	obj$rune_prot   = 3000; { Rune of protection resistance         }
+	obj_lamp_max    =15000; { Maximum amount that lamp can be filled}
+	obj_bolt_range  = 18;   { Maximum range of bolts and balls      }
+	obj_rune_prot   = 3000; { Rune of protection resistance         }
 
 	{ Creature contants						}
 	max_creatures    = 279; { Number of creatures defined for univ  }
@@ -117,8 +117,8 @@ const
 	min_malloc_tn    =   8; { Number of people on town level (night)}
 	win_mon_tot      =   2; { Total number of "win" creatures       }
 	win_mon_appear   =  50; { Level where winning creatures begin   }
-	mon$summon_adj   =   2; { Adjust level of summoned creatures    }
-	mon$drain_life   =   2; { Percent of player exp drained per hit }
+	mon_summon_adj   =   2; { Adjust level of summoned creatures    }
+	mon_drain_life   =   2; { Percent of player exp drained per hit }
 
 	{ Trap constants						}
 	max_trapa        = 18;  { Number of defined traps               }
@@ -144,11 +144,11 @@ const
 	player_food_faint=  300;{ Character begins fainting             }
 	player_food_weak = 1000;{ Warn player that he is getting very low}
 	player_food_alert= 2000;{ Warn player that he is getting low    }
-	player$regen_faint  = 0.0005;   { Regen factor when fainting    }
-	player$regen_weak   = 0.0015;   { Regen factor when weak        }
-	player$regen_normal = 0.0030;   { Regen factor when full        }
-	player$regen_hpbase = 0.0220;   { Min amount hp regen           }
-	player$regen_mnbase = 0.0080;   { Min amount mana regen         }
+	player_regen_faint  = 0.0005;   { Regen factor when fainting    }
+	player_regen_weak   = 0.0015;   { Regen factor when weak        }
+	player_regen_normal = 0.0030;   { Regen factor when full        }
+	player_regen_hpbase = 0.0220;   { Min amount hp regen           }
+	player_regen_mnbase = 0.0080;   { Min amount mana regen         }
 	player_weight_cap= 130; { "#"*(1/10 pounds) per strength point  }
 	player_exit_pause= 6;   { Pause time before player can re-roll  }
 

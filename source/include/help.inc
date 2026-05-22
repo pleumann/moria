@@ -1,4 +1,4 @@
-[psect(misc2$code)] procedure ident_char;
+procedure ident_char;
     var
 	command         : char;
     begin
@@ -99,13 +99,13 @@
 	  '|' : prt('| - A sword or dagger.',1,1);
 	  '}' : prt('} - Bow, crossbow, or sling.',1,1);
 	  '~' : prt('~ - Miscellaneous item.',1,1);
-	  otherwise prt('Not Used.',1,1);
+	  else prt('Not Used.',1,1);
 	end
     end;
 
 
 	{ Help for available commands					}
-[psect(misc2$code)] procedure help;
+procedure help;
     begin
       clear(1,1);
 prt('B <Dir> Bash (object/creature)|  q        Quaff a potion.',1,1);
@@ -138,7 +138,7 @@ prt('p       Read a prayer.        |            1  2  3',23,1);
 
 
 	{ Help for available wizard commands				}
-[psect(wizard$code)] procedure wizard_help;
+procedure wizard_help;
     begin
       clear(1,1);
       if (wizard2) then
@@ -180,17 +180,17 @@ prt('p       Read a prayer.        |            1  2  3',23,1);
 
 
 	{ Spawn a process to use HELP utility on the MORIA help library -RAK-}
-[psect(misc2$code)] procedure moria_help(help_level : vtype);
+procedure moria_help(help_level : vtype);
     var
-	dcl_command                     : varying [120] of char;
+	dcl_command                     : string[120];
 	flag_bits                       : unsigned;
 
 	{ Spawn a shell and execute DCL command 		-RAK-	}
-    [external(LIB$SPAWN)] function dcl(
-	%DESCR command  : varying [a] of char;
+    function dcl(
+	command  : string[a];
 	    dum2        : integer := %immed 0;
 	    dum3        : integer := %immed 0;
-	%REF flags      : unsigned;
+	flags      : unsigned;
 	    dum5        : integer := %immed 0;
 	    dum6        : integer := %immed 0;
 	    dum7        : integer := %immed 0;
@@ -200,7 +200,7 @@ prt('p       Read a prayer.        |            1  2  3',23,1);
 	external;
 
     begin
-      flag_bits := %X'00000006';
+      flag_bits := $00000006;
       prt('[Entering Moria Help Library, Use ^Z to resume game]',1,1);
       put_qio;
       dcl_command := 'HELP/PAGE/NOLIBLIST/LIBRARY='+MORIA_HLP;

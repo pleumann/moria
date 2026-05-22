@@ -1,5 +1,5 @@
 	{ Pray like HELL...					-RAK-	}
-[psect(misc2$code)] procedure pray;
+procedure pray;
       var
 		i1,i2,item_val,dir		: integer;
 		choice,chance			: integer;
@@ -52,7 +52,7 @@
 	  14 :	create_food;
 	  15 :	for i1 := 1 to inven_max-1 do
 		  with inventory[i1] do
-		    flags := uand(flags,%X'7FFFFFFF');
+		    flags := uand(flags,$7FFFFFFF);
 	  16 :	with py.flags do
 		  begin
 		    resist_heat := resist_heat + randint(10) + 10;
@@ -70,19 +70,19 @@
 	  24 :	hp_player(damroll('16d4'),'a prayer.');
 	  25 :	turn_undead;
 	  26 :	bless(randint(48)+48);
-	  27 :	dispell_creature(%X'0008',3*py.misc.lev);
+	  27 :	dispell_creature($0008,3*py.misc.lev);
 	  28 :	hp_player(200,'a prayer.');
-	  29 :	dispell_creature(%X'0004',3*py.misc.lev);
+	  29 :	dispell_creature($0004,3*py.misc.lev);
 	  30 :	warding_glyph;
 	  31 :	begin
-		  dispell_creature(%X'0004',4*py.misc.lev);
+		  dispell_creature($0004,4*py.misc.lev);
 		  cure_confusion;
 		  remove_fear;
 		  cure_poison;
 		  cure_blindness;
 		  hp_player(1000,'a prayer.');
 		end;
-	  otherwise ;
+	  else ;
 	end;
 	{ End of prayers...				}
 			        if (not(reset_flag)) then

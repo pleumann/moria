@@ -1,4 +1,4 @@
-[psect(create$code)] procedure create_character;
+procedure create_character;
 
 
 	{ Generates character's stats				-JWT-	}
@@ -128,7 +128,7 @@
 	hist_ptr,cur_ptr,test_roll	: integer;
 	start_pos,end_pos,cur_len	: integer;
 	line_ctr,new_start,social_class	: integer;
-	history_block			: varying [400] of char;
+	history_block			: string[400];
 	flag				: boolean;
     begin
 	{ Get a block of history text				}
@@ -222,7 +222,7 @@
 		  exit_flag := true;
 		  get_sex := false;
 		end;
-	  otherwise ;
+	  else ;
 	 end;
       until (exit_flag);
     end;

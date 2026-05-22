@@ -19,31 +19,31 @@
 {       this software in any form without the expressed written consent }
 {       of the author Robert Alan Koeneke.                              }
 {                                                                       }
-[environment('moria.env')] program moria(input,output);
+program moria(input,output);
 
 	{ Globals						-RAK-	}
-	%INCLUDE 'MOR_INCLUDE:CONSTANTS.INC'
-	%INCLUDE 'MOR_INCLUDE:TYPES.INC'
-	%INCLUDE 'MOR_INCLUDE:VARIABLES.INC'
-	%INCLUDE 'MOR_INCLUDE:VALUES.INC'
+	{$i include/CONSTANTS.INC}
+	{$i include/TYPES.INC}
+	{$i include/VARIABLES.INC}
+	{$i include/VALUES.INC}
 
 	{ Libraries of routines 				-RAK-	}
-	%INCLUDE 'MOR_INCLUDE:IO.INC'
-	%INCLUDE 'MOR_INCLUDE:MISC.INC'
-	%INCLUDE 'MOR_INCLUDE:DEATH.INC'
-	%INCLUDE 'MOR_INCLUDE:HELP.INC'
-	%INCLUDE 'MOR_INCLUDE:DESC.INC'
-	%INCLUDE 'MOR_INCLUDE:FILES.INC'
-	%INCLUDE 'MOR_INCLUDE:STORE1.INC'
-	%INCLUDE 'MOR_INCLUDE:SAVE.INC'
-	%INCLUDE 'MOR_INCLUDE:CREATE.INC'
-	%INCLUDE 'MOR_INCLUDE:GENERATE.INC'
-	%INCLUDE 'MOR_INCLUDE:MORIA.INC'
+	{$i include/IO.INC}
+	{$i include/MISC.INC}
+	{$i include/DEATH.INC}
+	{$i include/HELP.INC}
+	{$i include/DESC.INC}
+	{$i include/FILES.INC}
+	{$i include/STORE1.INC}
+	{$i include/SAVE.INC}
+	{$i include/CREATE.INC}
+	{$i include/GENERATE.INC}
+	{$i include/MORIA.INC}
 
 
 	{ TERMDEF is external so that new terminals can be defined-RAK- }
 	{ wihtout recompiling the entire source.                        }
-	[external] procedure termdef;
+	procedure termdef;
 	  external;
 
 	{ Initialize, restore, and get the ball rolling...	-RAK-	}

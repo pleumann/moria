@@ -1,10 +1,10 @@
 	{ Print Moria credits					-RAK-	}
-[psect(misc1$code)]    procedure game_version;
+procedure game_version;
       var
 	tmp_str			: vtype;
       begin
 	clear(1,1);
-	writev(tmp_str,'               Moria Version ',cur_version:3:2);
+	WriteStr(tmp_str,'               Moria Version ',cur_version:3:2);
 put_buffer(tmp_str,1,1);
 put_buffer('Version 0.1  : 03/25/83',2,1);
 put_buffer('Version 1.0  : 05/01/84',3,1);
@@ -30,7 +30,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 
 
 	{ Light up the dungeon					-RAK-	}
-[psect(wizard$code)]  procedure wizard_light;
+procedure wizard_light;
     var
 	i1,i2,i3,i4	: integer;
 	flag		: boolean;
@@ -56,7 +56,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 
 
 	{ Wizard routine for gaining on stats			-RAK-	}
-[psect(wizard$code)]  procedure change_character;
+procedure change_character;
     var
 	tmp_val			: integer;
 	tmp_str			: vtype;
@@ -66,7 +66,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Strength     = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      str  := tmp_val;
@@ -76,7 +76,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Intelligence = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      int  := tmp_val;
@@ -86,7 +86,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Wisdom       = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      wis  := tmp_val;
@@ -96,7 +96,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Dexterity    = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      dex  := tmp_val;
@@ -106,7 +106,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Constitution = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      con  := tmp_val;
@@ -116,7 +116,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(3 - 118) Charisma     = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 2) and (tmp_val < 119)) then
 	    begin
 	      chr  := tmp_val;
@@ -129,7 +129,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(1 - 32767) Hit points = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -1;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > 0) and (tmp_val < 32768)) then
 	    begin
 	      mhp  := tmp_val;
@@ -140,67 +140,67 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('(0 - 32767) Mana       = ',1,1);
 	  get_string(tmp_str,1,26,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 32768)) then
 	    begin
 	      mana  := tmp_val;
 	      cmana := tmp_val;
 	      prt_cmana;
 	    end;
-	  writev(tmp_str,'Current=',srh:1,'  (0-200) Searching = ');
+	  WriteStr(tmp_str,'Current=',srh:1,'  (0-200) Searching = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 201)) then
 	    srh  := tmp_val;
-	  writev(tmp_str,'Current=',stl:1,'  (0-10) Stealth = ');
+	  WriteStr(tmp_str,'Current=',stl:1,'  (0-10) Stealth = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 11)) then
 	    stl  := tmp_val;
-	  writev(tmp_str,'Current=',disarm:1,'  (0-200) Disarming = ');
+	  WriteStr(tmp_str,'Current=',disarm:1,'  (0-200) Disarming = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 201)) then
 	    disarm := tmp_val;
-	  writev(tmp_str,'Current=',save:1,'  (0-100) Save = ');
+	  WriteStr(tmp_str,'Current=',save:1,'  (0-100) Save = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 201)) then
 	    save := tmp_val;
-	  writev(tmp_str,'Current=',bth:1,'  (0-200) Base to hit = ');
+	  WriteStr(tmp_str,'Current=',bth:1,'  (0-200) Base to hit = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 201)) then
 	    bth  := tmp_val;
-	  writev(tmp_str,'Current=',bthb:1,'  (0-200) Bows/Throwing = ');
+	  WriteStr(tmp_str,'Current=',bthb:1,'  (0-200) Bows/Throwing = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if ((tmp_val > -1) and (tmp_val < 201)) then
 	    bthb := tmp_val;
-	  writev(tmp_str,'Current=',au:1,'  Gold = ');
+	  WriteStr(tmp_str,'Current=',au:1,'  Gold = ');
 	  tmp_val := length(tmp_str);
 	  prt(tmp_str,1,1);
 	  get_string(tmp_str,1,tmp_val+1,10);
 	  tmp_val := -999;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  if (tmp_val > -1) then
 	    begin
 	      au := tmp_val;
@@ -212,7 +212,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
     end;
 
 	{ Wizard routine for creating objects			-RAK-	}
-[psect(wizard$code)]  procedure wizard_create;
+procedure wizard_create;
     var
 	tmp_val			: integer;
 	tmp_str			: vtype;
@@ -232,7 +232,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	    prt('Tval   : ',1,1);
 	    get_string(tmp_str,1,10,10);
 	    tmp_val := 0;
-	    readv(tmp_str,tmp_val,error:=continue);
+	    ReadStr(tmp_str,tmp_val);
 	    flag := true;
 	    case tmp_val of
 	      1,13,15 :	tchar := '~';
@@ -262,24 +262,24 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	      80 :	tchar := ',';
 	      90 :	tchar := '?';
 	      91 :	tchar := '?';
-	      otherwise	flag := false;
+	      else	flag := false;
 	    end;
 	  until (flag);
 	  tval := tmp_val;
 	  prt('Subval : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 1;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  subval := tmp_val;
 	  prt('Weight : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 1;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  weight := tmp_val;
 	  prt('Number : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 1;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  number := tmp_val;
 	  prt('Damage : ',1,1);
 	  get_string(tmp_str,1,10,5);
@@ -287,34 +287,34 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 	  prt('+To hit: ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  tohit := tmp_val;
 	  prt('+To dam: ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  todam := tmp_val;
 	  prt('AC     : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  ac := tmp_val;
 	  prt('+To AC : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  toac := tmp_val;
 	  prt('P1     : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  p1 := tmp_val;
 	  prt('Flags (In HEX): ',1,1);
 	  flags := get_hex_value(1,17,8);
 	  prt('Cost : ',1,1);
 	  get_string(tmp_str,1,10,10);
 	  tmp_val := 0;
-	  readv(tmp_str,tmp_val,error:=continue);
+	  ReadStr(tmp_str,tmp_val);
 	  cost := tmp_val;
 	  if (get_com('Allocate? (Y/N)',command)) then
 	    case command of
@@ -329,7 +329,7 @@ put_buffer('(405)-321-2925                    (405) 360-6792',21,1);
 			      end;
 			    msg_print('Allocated...');
 			  end;
-		otherwise msg_print('Aborted...');
+		else msg_print('Aborted...');
 	    end;
 	  inventory[inven_max] := blank_treasure;
 	end;

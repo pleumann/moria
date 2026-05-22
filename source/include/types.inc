@@ -1,26 +1,26 @@
   type
-	byteint		= [byte] 0..255;
-	bytlint		= [byte] -128..127;
-	wordint		= [word] 0..65535;
-	worlint		= [word] -32768..32767;
+	byteint		= 0..255;
+	bytlint		= -128..127;
+	wordint		= 0..65535;
+	worlint		= -32768..32767;
 	quad_type	= record
 			    l0	: unsigned;
 			    l1  : unsigned;
 			  end;
-	atype		= varying  [16] of char;
-	btype		= varying  [14] of char;
-	ctype		= varying  [26] of char;
-	dtype		= varying   [5] of char;
-	etype		= varying  [34] of char;
-	mtype		= varying [190] of char;
-	ntype		= varying[1024] of char;
-	ttype		= varying  [68] of char;
-	vtype		= varying  [80] of char;
+	atype		= string[16];
+	btype		= string[14];
+	ctype		= string[26];
+	dtype		= string[5];
+	etype		= string[34];
+	mtype		= string[190];
+	ntype		= string[1024];
+	ttype		= string[68];
+	vtype		= string[80];
 	stat_type	= packed array [1..6] of char;
 	obj_set		= set of 0..255;
 	char_set	= set of 'A'..'z';
 	key_type	= record		{ For char saver	}
-		file_id : [key(0)] packed array [1..70] of char;
+		file_id : packed array [1..70] of char;
 		seed	: integer;
 	end;
 	creature_type = record
@@ -50,9 +50,9 @@
 		fy	: byteint;	{ Y Pointer into map	}
 		fx	: byteint;	{ X Pointer into map	}
 
-		stuned	: [bit(6),pos(104)] -32..31; { Rounds stunned}
-		ml	: [bit(1),pos(110)] boolean; { On if shown   }
-		confused: [bit(1),pos(111)] boolean; { On if confused}
+		stuned	: -32..31; { Rounds stunned}
+		ml	: boolean; { On if shown   }
+		confused: boolean; { On if confused}
 	end;
 	treasure_type = record
 		name	: ttype;	{ Object name		}
@@ -243,17 +243,17 @@
 		bonus	: bytlint;{ Bonus to the Social Class	}
 	end;
 	floor_type = record
-		ftval	: [bit(7),pos(0)] 0..15;
-		ftopen	: [bit(1),pos(7)] boolean;
+		ftval	: 0..15;
+		ftopen	: boolean;
 	end;
 	cave_type = record
 		cptr	: byteint;
 		tptr	: byteint;
-		fval	: [bit(4),pos(16)] 0..15;
-		fopen	: [bit(1),pos(20)] boolean;
-		fm	: [bit(1),pos(21)] boolean;
-		pl	: [bit(1),pos(22)] boolean;
-		tl	: [bit(1),pos(23)] boolean;
+		fval	: 0..15;
+		fopen	: boolean;
+		fm	: boolean;
+		pl	: boolean;
+		tl	: boolean;
 	end;
 	row_floor  = array [1..max_width] of cave_type;
 	owner_type = record

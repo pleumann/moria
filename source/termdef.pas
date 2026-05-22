@@ -1,10 +1,10 @@
 [inherit('moria.env')] module a;
-{  TERMDEF : uses the values returned by SYS$GETDVI to set up the proper}
+{  TERMDEF : uses the values returned by SYS_GETDVI to set up the proper}
 {       addressing codes.  New terminals can be added, or existing ones }
 {       changed wihtout re-compiling the main source.  You can use      }
 {       compile.com by specifying:                                      }
 {               $ cterm :== @DISK_NAME:[FILE_PATH]compile termdef       }
-[global] procedure termdef;
+procedure termdef;
   type
 	term_type       =       packed array [1..3] of char;
 	dvi_type        =       record
@@ -17,11 +17,11 @@
   var
 	dvi_buff        : dvi_type;
 	i1              : integer;
-	tmp_str         : varying[10] of char;
+	tmp_str         : string[10];
 	tmp             : char;
 	escape          : char;
 
-  [external(SYS$GETDVI)] function get_dvi	(
+  function get_dvi	(
 		 efn            : integer := %immed 0;
 		 chan           : integer := %immed 0;
 	%stdescr terminal       : term_type;
@@ -45,7 +45,7 @@
       end;
     get_dvi(terminal:='TT:',itmlst:=dvi_buff);
 	{ Add new terminals in this case statement.  The case number is }
-	{ returned by SYS$GETVI.  Terminals are either row then col, or }
+	{ returned by SYS_GETVI.  Terminals are either row then col, or }
 	{ col then row.                                                 }
 	{   ROW_FIRST should be true if the row is given first.         }
 	{   CURSOR_ERL is the sequence for erase-to-end-of-line.        }
@@ -164,13 +164,13 @@
 		  cursor_l   := 8;
 		  for i1 := 1 to 24 do
 		    begin
-		      writev(tmp_str,'00',i1:1);                { Row chars}
+		      WriteStr(tmp_str,'00',i1:1);                { Row chars}
 		      tmp_str := substr(tmp_str,length(tmp_str)-1,2);
 		      cursor_r[i1] := escape + '[' + tmp_str;   { Row part }
 		    end;
 		  for i1 := 1 to 80 do
 		    begin
-		      writev(tmp_str,'00',i1:1);                { Col chars}
+		      WriteStr(tmp_str,'00',i1:1);                { Col chars}
 		      tmp_str := substr(tmp_str,length(tmp_str)-1,2);
 		      cursor_c[i1] := ';' + tmp_str + 'H';      { Col part }
 		    end;

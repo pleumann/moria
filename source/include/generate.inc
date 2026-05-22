@@ -1,5 +1,5 @@
 	{ Generates a random dungeon level			-RAK-	}
-[psect(generate$code)] procedure generate_cave;
+procedure generate_cave;
     type
 	coords = record
 		y	: integer;
@@ -56,7 +56,7 @@
 			  rdir :=  0;
 			  cdir :=  1
 			end;
-		otherwise correct_dir(rdir,cdir,y1,x1,y2,x2)
+		else correct_dir(rdir,cdir,y1,x1,y2,x2)
 	  end
 	end;
     
@@ -379,7 +379,7 @@
 		  case randint(10) of
 		    1 : place_up_stairs(yval,xval);
 		    2 : place_down_stairs(yval,xval);
-		    otherwise place_object(yval,xval);
+		    else place_object(yval,xval);
 		  end;
 			{ Guard the treasure well		}
 		  vault_monster(yval,xval,2+randint(3));

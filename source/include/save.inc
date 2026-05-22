@@ -4,7 +4,7 @@
 
 	{ Data Corruption means character is dead, or save file was -RAK-
 	  screwed with.  Keep them guessing as to what is actually wrong.}
-[psect(save$code)] procedure data_exception;
+procedure data_exception;
       begin
 	clear(1,1);
 	prt('Data Corruption Error.',1,1);
@@ -14,7 +14,7 @@
 
 
 	{ Uses XOR function to encode data			-RAK-	}
-[psect(save$code)] procedure coder(var line : ntype);
+procedure coder(var line : ntype);
       var
 		i1                      : integer;
 		i2,i3,i4                : unsigned;
@@ -31,7 +31,7 @@
 
 	{ Encrypts a line of text, complete with a data-check sum-RAK-	}
 	{ (original by JWT)                                             }
-[psect(save$code)] procedure encrypt(var line : ntype);
+procedure encrypt(var line : ntype);
       var
 	i1,i2           : integer;
 	temp            : ntype;
@@ -41,14 +41,14 @@
 	for i1 := 1 to length(line) do
 	  i2 := i2 + ord(line[i1]) + i1;
 	temp := line;
-	writev(line,i2:1,' ',temp);
+	WriteStr(line,i2:1,' ',temp);
 	coder(line);
       end;
 
 
 	{ Decrypts a line of text, complete with a data-check sum-RAK-	}
 	{ (original by JWT)                                             }
-[psect(save$code)] procedure decrypt(var line : ntype);
+procedure decrypt(var line : ntype);
       var
 	i1,i2,i3        : integer;
 	temp            : ntype;
@@ -58,7 +58,7 @@
 	i2 := 0;
 	coder(line);
 	temp := line;
-	readv(temp,i3,tmp,line);
+	ReadStr(temp,i3,tmp,line);
 	for i1 := 1 to length(line) do
 	  i2 := i2 + ord(line[i1]) + i1;
 	if (i2 <> i3) then data_exception;
@@ -66,7 +66,7 @@
 
 
 	{ Actual save procedure 			-RAK- & -JWT-	}
-[psect(save$code)] function save_char : boolean;
+function save_char : boolean;
       var
 	tot_monsters,tot_treasure               : integer;
 	i1,i2,trys                              : integer;
@@ -95,7 +95,7 @@
 	{ Make an attempt to open the MASTER file               -JWT-   }
 	if (flag) then
 	  begin
-	    rewrite(f1,error:=continue);
+	    rewrite(f1);
 	    priv_switch(1);
 	    open (f2,file_name:=moria_mas,
 		    error:=continue,access_method:=keyed,organization:=indexed,
@@ -110,7 +110,7 @@
 	      if (status(f2) <> 0) then
 		begin
 		  msg_print('Error saving character, contact MORIA Wizard.');
-		  close(f1,error:=continue);
+		  close(f1);
 		  flag := false;
 		end;
 	  end;
@@ -127,7 +127,7 @@
 	      for i1 := 1 to 70 do
 		key_rec.file_id[i1] := title1[i1];
 	      f2^ := key_rec;
-	      put(f2,error:=continue);
+	      put(f2);
 	      if (status(f2) <> 0) then
 		begin
 		  trys := trys + 1;
@@ -141,66 +141,66 @@
 	      else
 		file_flag := true;
 	    until(file_flag);
-	    close(f2,error:=continue);
+	    close(f2);
 	    priv_switch(0);
 	  end;
 	{ If ID was written to MASTER, continue saving          -RAK-   }
 	if (flag) then
 	  begin
 	    save_seed := get_seed;
-	    writev(title2,save_seed:12,' ',temp);
+	    WriteStr(title2,save_seed:12,' ',temp);
 	    seed := encrypt_seed2;
 	    encrypt(title2);
-	    writeln(f1,title2,error:=continue);
+	    writeln(f1,title2);
 	    seed := save_seed;
 		{ Message to player on what is happening}
 	    clear(1,1);
 	    prt('Saving character...',1,1);
 	    put_qio;
 		{ Version number of Moria               }
-	    writev(out_rec,cur_version);
+	    WriteStr(out_rec,cur_version);
 	    encrypt(out_rec);
-	    writeln(f1,out_rec,error:=continue);
+	    writeln(f1,out_rec);
 
 		{ Write out the player record.	}
 	    with py.misc do
 	      begin
-		writev(out_rec,name);
+		WriteStr(out_rec,name);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,race);
+		WriteStr(out_rec,race);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,sex);
+		WriteStr(out_rec,sex);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,tclass);
+		WriteStr(out_rec,tclass);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,title);
+		WriteStr(out_rec,title);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
 		for i1 := 1 to 5 do
 		  begin
 		    out_rec := history[i1];
 		    encrypt(out_rec);
-		    writeln(f1,out_rec,error:=continue);
+		    writeln(f1,out_rec);
 		  end;
 
-		writev(out_rec,char_row:1,' ',char_col:1,' ',
+		WriteStr(out_rec,char_row:1,' ',char_col:1,' ',
 		  pclass:1,' ',prace:1,' ',
 		  age:1,' ',ht:1,' ',wt:1,' ',sc:1,' ',max_exp:1,' ',
 		  exp:1,' ',lev:1,' ',max_lev:1,' ',expfact:2:1);
 
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,srh:1,' ',fos:1,' ',stl:1,' ',bth:1,' ',
+		WriteStr(out_rec,srh:1,' ',fos:1,' ',stl:1,' ',bth:1,' ',
 		  bthb:1,' ',
 		  mana:1,' ',cmana:1,' ',mhp:1,' ',chp:1:1,' ',au:1,' ',
 		  ptohit:1,' ',ptodam:1,' ',pac:1,' ',ptoac:1,' ',
@@ -208,112 +208,112 @@
 		  disarm:1,' ',save:1,' ',hitdie:1);
 
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,inven_ctr:1,' ',
+		WriteStr(out_rec,inven_ctr:1,' ',
 		  inven_weight:1,' ',equip_ctr:1,' ',dun_level:1,' ',
-		  missle_ctr:1,' ',mon_tot_mult:1,' ',uand(%X'F',turn):1,
+		  missle_ctr:1,' ',mon_tot_mult:1,' ',uand($F,turn):1,
 		  ' ',randes_seed:12);
 
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 	      end;
 
 		{ Write out the inventory records.	}
 	    for i1 := 1 to inven_ctr do
 	      begin
-		writev(out_rec,inventory[i1].tchar,inventory[i1].name);
+		WriteStr(out_rec,inventory[i1].tchar,inventory[i1].name);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,inventory[i1].damage);
+		WriteStr(out_rec,inventory[i1].damage);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
 		with inventory[i1] do
-		  writev(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
+		  WriteStr(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
 			number:1,' ',tohit:1,' ',todam:1,' ',ac:1,' ',
 			toac:1,' ',p1:1,' ',flags:1,' ',level:1,' ',cost:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 	      end;
 
 		{ Write out the equipment records.	}
 	    for i1 := 23 to inven_max-1 do
 	      begin
-		writev(out_rec,inventory[i1].tchar,inventory[i1].name);
+		WriteStr(out_rec,inventory[i1].tchar,inventory[i1].name);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,inventory[i1].damage);
+		WriteStr(out_rec,inventory[i1].damage);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
 		with inventory[i1] do
-		  writev(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
+		  WriteStr(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
 			number:1,' ',tohit:1,' ',todam:1,' ',ac:1,' ',
 			toac:1,' ',p1:1,' ',flags:1,' ',level:1,' ',cost:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 	      end;
 
 	    with py.stat do
 	      begin
-		writev(out_rec,str:1,' ',cstr:1,' ',dex:1,' ',cdex:1,' ',
+		WriteStr(out_rec,str:1,' ',cstr:1,' ',dex:1,' ',cdex:1,' ',
 			con:1,' ',ccon:1,' ',int:1,' ',cint:1,' ',wis:1,' ',
 			cwis:1,' ',chr:1,' ',cchr:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 	      end;
 
 	    with py.flags do
 	      begin
-		writev(out_rec,status:1,' ',blind:1,' ',confused:1,' ',
+		WriteStr(out_rec,status:1,' ',blind:1,' ',confused:1,' ',
 			food:1,' ',food_digested:1,' ',protection:1,' ',
 			speed:1,' ',afraid:1,' ',
 			poisoned:1,' ',see_inv:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,fast:1,' ',slow:1,' ',protevil:1,' ',
+		WriteStr(out_rec,fast:1,' ',slow:1,' ',protevil:1,' ',
 			teleport:1,' ',free_act:1,' ',slow_digest:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,aggravate:1,' ',sustain_str:1,' ',
+		WriteStr(out_rec,aggravate:1,' ',sustain_str:1,' ',
 			sustain_int:1,' ',sustain_wis:1,' ',sustain_con:1,' ',
 			sustain_dex:1,' ',sustain_chr:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,fire_resist:1,' ',cold_resist:1,' ',
+		WriteStr(out_rec,fire_resist:1,' ',cold_resist:1,' ',
 			acid_resist:1,' ',regenerate:1,' ',lght_resist:1,' ',
 			ffall:1,' ',confuse_monster:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 
-		writev(out_rec,image:1,' ',invuln:1,' ',hero:1,' ',
+		WriteStr(out_rec,image:1,' ',invuln:1,' ',hero:1,' ',
 			shero:1,' ',blessed:1,' ',
 			resist_heat:1,' ',resist_cold:1,' ',detect_inv:1,' ',
 			word_recall:1,' ',see_infra:1,' ',tim_infra:1);
 		encrypt(out_rec);
-		writeln(f1,out_rec,error:=continue);
+		writeln(f1,out_rec);
 	      end;
 
 	    for i1 := 1 to 31 do
 	      with magic_spell[py.misc.pclass,i1] do
 		begin
-		  writev(out_rec,learned:5,' ',sexp:5);
+		  WriteStr(out_rec,learned:5,' ',sexp:5);
 		  encrypt(out_rec);
-		  writeln(f1,out_rec,error:=continue)
+		  writeln(f1,out_rec)
 		end;
 
 		{ Write the important dungeon info and floor	-RAK-	}
 	    begin
-	      writev(out_rec,cur_height:1,' ',cur_width:1,' ',
+	      WriteStr(out_rec,cur_height:1,' ',cur_width:1,' ',
 		max_panel_rows:1,' ',max_panel_cols:1);
 	      encrypt(out_rec);
-	      writeln(f1,out_rec,error:=continue);
+	      writeln(f1,out_rec);
 
 		{ Save the floor	}
 	      tot_treasure := 0;
@@ -326,46 +326,46 @@
 			begin
 			  xfloor := fval;
 			  if (fopen) then
-			    xfloor := uor(xfloor,%X'10');
+			    xfloor := uor(xfloor,$10);
 			  if (pl) then
-			    xfloor := uor(xfloor,%X'20');
+			    xfloor := uor(xfloor,$20);
 			  if (fm) then
-			    xfloor := uor(xfloor,%X'40');
+			    xfloor := uor(xfloor,$40);
 			  out_rec[i2] := chr(xfloor);
 			  if (tptr > 0) then
 			    tot_treasure := tot_treasure + 1;
 			end;
 		    end;
 		  encrypt(out_rec);
-		  writeln(f1,out_rec,error:=continue);
+		  writeln(f1,out_rec);
 		end;
 
 		{ Save the Treasure List		}
-	      writev(out_rec,tot_treasure:1);
+	      WriteStr(out_rec,tot_treasure:1);
 	      encrypt(out_rec);
-	      writeln(f1,out_rec,error:=continue);
+	      writeln(f1,out_rec);
 	      for i1 := 1 to cur_height do
 		for i2 := 1 to cur_width do
 		  if (cave[i1,i2].tptr > 0) then
 		    with t_list[cave[i1,i2].tptr] do
 		      begin
-			writev(out_rec,i1:1,' ',i2:1);
+			WriteStr(out_rec,i1:1,' ',i2:1);
 			encrypt(out_rec);
-			writeln(f1,out_rec,error:=continue);
+			writeln(f1,out_rec);
 
-			writev(out_rec,tchar,name);
+			WriteStr(out_rec,tchar,name);
 			encrypt(out_rec);
-			writeln(f1,out_rec,error:=continue);
+			writeln(f1,out_rec);
 
-			writev(out_rec,damage);
+			WriteStr(out_rec,damage);
 			encrypt(out_rec);
-			writeln(f1,out_rec,error:=continue);
+			writeln(f1,out_rec);
 
-			writev(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
+			WriteStr(out_rec,tval:1,' ',subval:1,' ',weight:1,' ',
 			  number:1,' ',tohit:1,' ',todam:1,' ',ac:1,' ',
 			  toac:1,' ',p1:1,' ',flags:1,' ',level:1,' ',cost:1);
 			encrypt(out_rec);
-			writeln(f1,out_rec,error:=continue);
+			writeln(f1,out_rec);
 		      end;
 
 		{ Save identified list			}
@@ -378,7 +378,7 @@
 		    out_rec := out_rec + 'F';
 		end;
 	      encrypt(out_rec);
-	      writeln(f1,out_rec,error:=continue);
+	      writeln(f1,out_rec);
 
 		{ Save the Monster List 		}
 	      i1 := muptr;
@@ -389,67 +389,67 @@
 		  with m_list[i1] do
 		    i1 := nptr;
 		until (i1 = 0);
-	      writev(out_rec,tot_monsters:1);
+	      WriteStr(out_rec,tot_monsters:1);
 	      encrypt(out_rec);
-	      writeln(f1,out_rec,error:=continue);
+	      writeln(f1,out_rec);
 	      i1 := muptr;
 	      if (i1 > 0) then
 		repeat
 		  with m_list[i1] do
 		    begin
-		      writev(out_rec,fy:1,' ',fx:1,' ',mptr:1,' ',hp:1,
+		      WriteStr(out_rec,fy:1,' ',fx:1,' ',mptr:1,' ',hp:1,
 			' ',cspeed:1,' ',csleep:1,' ',cdis:1,' ',ml:1,
 			' ',confused:1);
 		      encrypt(out_rec);
-		      writeln(f1,out_rec,error:=continue);
+		      writeln(f1,out_rec);
 		      i1 := nptr;
 		    end;
 		until (i1 = 0);
 
 		{ Save the town level stores		}
-	      writev(out_rec,town_seed:12);
+	      WriteStr(out_rec,town_seed:12);
 	      encrypt(out_rec);
-	      writeln(f1,out_rec,error:=continue);
+	      writeln(f1,out_rec);
 	      for i1 := 1 to max_stores do
 		with store[i1] do
 		  begin
 		{ Save items...                 }
-		    writev(out_rec,store_ctr:1);
+		    WriteStr(out_rec,store_ctr:1);
 		    encrypt(out_rec);
-		    writeln(f1,out_rec,error:=continue);
+		    writeln(f1,out_rec);
 		    for i2 := 1 to store_ctr do
 		      with store_inven[i2].sitem do
 			begin
-			  writev(out_rec,store_inven[i2].scost);
+			  WriteStr(out_rec,store_inven[i2].scost);
 			  encrypt(out_rec);
-			  writeln(f1,out_rec,error:=continue);
-			  writev(out_rec,tchar,name);
+			  writeln(f1,out_rec);
+			  WriteStr(out_rec,tchar,name);
 			  encrypt(out_rec);
-			  writeln(f1,out_rec,error:=continue);
-			  writev(out_rec,damage);
+			  writeln(f1,out_rec);
+			  WriteStr(out_rec,damage);
 			  encrypt(out_rec);
-			  writeln(f1,out_rec,error:=continue);
-			  writev(out_rec,tval:1,' ',subval:1,' ',weight:1,
+			  writeln(f1,out_rec);
+			  WriteStr(out_rec,tval:1,' ',subval:1,' ',weight:1,
 				' ',number:1,' ',tohit:1,' ',todam:1,' ',
 				ac:1,' ',toac:1,' ',p1:1,' ',flags:1,' ',
 				level:1,' ',cost:1);
 			  encrypt(out_rec);
-			  writeln(f1,out_rec,error:=continue);
+			  writeln(f1,out_rec);
 			end;
 		    if (store_open > turn) then
 		      store_open := store_open - turn + 15
 		    else
 		      store_open := 0;
-		    writev(out_rec,owner:1,' ',insult_cur:1,' ',store_open:1);
+		    WriteStr(out_rec,owner:1,' ',insult_cur:1,' ',store_open:1);
 		    encrypt(out_rec);
-		    writeln(f1,out_rec,error:=continue);
+		    writeln(f1,out_rec);
 		  end;
 	    end;
-	    close(f1,error:=continue)
+	    close(f1)
 	  end;
 	if (flag) then
 	  begin
-	    writev(out_rec,'Character saved. [Moria Version ',
+	    WriteStr(out_rec,'Character saved. [Moria Version ',
 						cur_version:5:2,']');
 	    prt(out_rec,1,1);
 	    exit;
@@ -460,7 +460,7 @@
 
 
 	{ Restore a saved game				-RAK- & -JWT-	}
-[psect(save$code)] function get_char(fnam : vtype) : boolean;
+function get_char(fnam : vtype) : boolean;
       var
 	tot_treasures,tot_monsters              : integer;
 	i1,i2,i3,i4,dummy                       : integer;
@@ -488,7 +488,7 @@
 	seed := encrypt_seed2;
 	decrypt(in_rec);
 	temp := substr(in_rec,1,12);
-	readv(temp,save_seed);
+	ReadStr(temp,save_seed);
 	temp := substr(in_rec,14,70);
 	seed := encrypt_seed1;
 	coder(temp);
@@ -496,14 +496,14 @@
 	priv_switch(1);
 	open (f2,file_name:=moria_mas,
 		access_method:=keyed,organization:=indexed,
-		history:=old,sharing:=readwrite,error:=continue);
+		history:=old,sharing:=readwrite);
 	if (status(f2) <> 0) then
 	  begin
 	    prt('ERROR opening file MASTER.',1,1);
 	    exit;
 	  end;
-	findk(f2,0,temp_id,eql,error:=continue);
-	delete(f2,error:=continue);
+	findk(f2,0,temp_id,eql);
+	delete(f2);
 	if (status(f2) <> 0) then
 	  data_exception;
 	close(f2);
@@ -513,13 +513,13 @@
 	put_qio;
 	readln(f1,in_rec);
 	decrypt(in_rec);
-	readv(in_rec,save_version);
+	ReadStr(in_rec,save_version);
 	if (save_version <> cur_version) then
 	  begin
 	    prt('Save file is incompatable with this version.',2,1);
-	    writev(in_rec,'  [Save file version ',save_version:5:2,']');
+	    WriteStr(in_rec,'  [Save file version ',save_version:5:2,']');
 	    prt(in_rec,3,1);
-	    writev(in_rec,'  [Moria version     ',cur_version:5:2,']');
+	    WriteStr(in_rec,'  [Moria version     ',cur_version:5:2,']');
 	    prt(in_rec,4,1);
 	    if (save_version > 4.0) then
 	      begin
@@ -534,27 +534,27 @@
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,name);
+	  ReadStr(in_rec,name);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,race);
+	  ReadStr(in_rec,race);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,sex);
+	  ReadStr(in_rec,sex);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,tclass);
+	  ReadStr(in_rec,tclass);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,title);
+	  ReadStr(in_rec,title);
 
 	for i1 := 1 to 5 do
 	  begin
@@ -566,19 +566,19 @@
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,char_row,char_col,pclass,prace,age,ht,wt,sc,
+	  ReadStr(in_rec,char_row,char_col,pclass,prace,age,ht,wt,sc,
 		max_exp,exp,lev,max_lev,expfact);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.misc do
-	  readv(in_rec,srh,fos,stl,bth,bthb,mana,cmana,mhp,chp,au,
+	  ReadStr(in_rec,srh,fos,stl,bth,bthb,mana,cmana,mhp,chp,au,
 		ptohit,ptodam,pac,ptoac,dis_th,dis_td,dis_ac,dis_tac,
 		disarm,save,hitdie);
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
-	readv(in_rec,inven_ctr,inven_weight,equip_ctr,dun_level,
+	ReadStr(in_rec,inven_ctr,inven_weight,equip_ctr,dun_level,
 	      missle_ctr,mon_tot_mult,turn,randes_seed);
 
 	{ Read in the inventory records.	}
@@ -586,16 +586,16 @@
 	  begin
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,inventory[i1].tchar,inventory[i1].name);
+	    ReadStr(in_rec,inventory[i1].tchar,inventory[i1].name);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,inventory[i1].damage);
+	    ReadStr(in_rec,inventory[i1].damage);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
 	    with inventory[i1] do
-	      readv(in_rec,tval,subval,weight,number,tohit,todam,ac,
+	      ReadStr(in_rec,tval,subval,weight,number,tohit,todam,ac,
 			toac,p1,flags,level,cost);
 	  end;
 
@@ -604,50 +604,50 @@
 	  begin
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,inventory[i1].tchar,inventory[i1].name);
+	    ReadStr(in_rec,inventory[i1].tchar,inventory[i1].name);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,inventory[i1].damage);
+	    ReadStr(in_rec,inventory[i1].damage);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
 	    with inventory[i1] do
-	      readv(in_rec,tval,subval,weight,number,tohit,todam,ac,
+	      ReadStr(in_rec,tval,subval,weight,number,tohit,todam,ac,
 			toac,p1,flags,level,cost);
 	  end;
 
 	readln(f1,in_rec);
 	decrypt(in_rec);
 	with py.stat do
-	  readv(in_rec,str,cstr,dex,cdex,con,ccon,int,cint,wis,cwis,chr,cchr);
+	  ReadStr(in_rec,str,cstr,dex,cdex,con,ccon,int,cint,wis,cwis,chr,cchr);
 
 
 	with py.flags do
 	  begin
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,status,blind,confused,food,food_digested,protection,
+	    ReadStr(in_rec,status,blind,confused,food,food_digested,protection,
 			speed,afraid,poisoned,see_inv);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,fast,slow,protevil,teleport,free_act,slow_digest);
+	    ReadStr(in_rec,fast,slow,protevil,teleport,free_act,slow_digest);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,aggravate,sustain_str,sustain_int,sustain_wis,
+	    ReadStr(in_rec,aggravate,sustain_str,sustain_int,sustain_wis,
 			sustain_con,sustain_dex,sustain_chr);
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,fire_resist,cold_resist,acid_resist,regenerate,
+	    ReadStr(in_rec,fire_resist,cold_resist,acid_resist,regenerate,
 			lght_resist,ffall,confuse_monster);
 
 
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,image,invuln,hero,shero,blessed,resist_heat,
+	    ReadStr(in_rec,image,invuln,hero,shero,blessed,resist_heat,
 			resist_cold,detect_inv,word_recall,see_infra,
 			tim_infra);
 	  end;
@@ -659,7 +659,7 @@
 	      begin
 		readln(f1,in_rec);
 		decrypt(in_rec);
-		readv(in_rec,magic_spell[py.misc.pclass,i1].learned)
+		ReadStr(in_rec,magic_spell[py.misc.pclass,i1].learned)
 	      end;
 	  end
 	else
@@ -669,7 +669,7 @@
 		begin
 		  readln(f1,in_rec);
 		  decrypt(in_rec);
-		  readv(in_rec,learned,sexp)
+		  ReadStr(in_rec,learned,sexp)
 		end;
 	  end;
 
@@ -679,7 +679,7 @@
 		{ Read the important dungeon info and floor     }
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,cur_height,cur_width,max_panel_rows,max_panel_cols);
+	    ReadStr(in_rec,cur_height,cur_width,max_panel_rows,max_panel_cols);
 
 		{ Restore the floor	}
 	    for i1 := 1 to cur_height do
@@ -691,12 +691,12 @@
 		    xfloor := ord(in_rec[i2]);
 		    with cave[i1,i2] do
 		      begin
-			fval := int(uand(%X'0F',xfloor));
-			if (uand(%X'10',xfloor) <> 0) then
+			fval := int(uand($0F,xfloor));
+			if (uand($10,xfloor) <> 0) then
 			  fopen := true;
-			if (uand(%X'20',xfloor) <> 0) then
+			if (uand($20,xfloor) <> 0) then
 			  pl := true;
-			if (uand(%X'40',xfloor) <> 0) then
+			if (uand($40,xfloor) <> 0) then
 			  fm := true;
 			tl := false;
 			tptr := 0;
@@ -709,7 +709,7 @@
 	    tlink;
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,tot_treasures);
+	    ReadStr(in_rec,tot_treasures);
 	    for i1 := 1 to tot_treasures do
 	      begin
 		popt(i2);
@@ -717,20 +717,20 @@
 		  begin
 		    readln(f1,in_rec);
 		    decrypt(in_rec);
-		    readv(in_rec,i3,i4);
+		    ReadStr(in_rec,i3,i4);
 		    cave[i3,i4].tptr := i2;
 
 		    readln(f1,in_rec);
 		    decrypt(in_rec);
-		    readv(in_rec,tchar,name);
+		    ReadStr(in_rec,tchar,name);
 
 		    readln(f1,in_rec);
 		    decrypt(in_rec);
-		    readv(in_rec,damage);
+		    ReadStr(in_rec,damage);
 
 		    readln(f1,in_rec);
 		    decrypt(in_rec);
-		    readv(in_rec,tval,subval,weight,number,tohit,todam,ac,toac,
+		    ReadStr(in_rec,tval,subval,weight,number,tohit,todam,ac,toac,
 		      p1,flags,level,cost);
 		  end;
 	      end;
@@ -748,7 +748,7 @@
 	    mlink;
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,tot_monsters);
+	    ReadStr(in_rec,tot_monsters);
 	    i3 := 0;
 	    for i1 := 1 to tot_monsters do
 	      begin
@@ -757,7 +757,7 @@
 		popm(i2);
 		with m_list[i2] do
 		  begin
-		    readv(in_rec,fy,fx,mptr,hp,cspeed,csleep,cdis,ml,confused);
+		    ReadStr(in_rec,fy,fx,mptr,hp,cspeed,csleep,cdis,ml,confused);
 		    cave[fy,fx].cptr := i2;
 		    if (muptr = 0) then
 		      muptr := i2
@@ -771,13 +771,13 @@
 		{ Restore the town level stores 	}
 	    readln(f1,in_rec);
 	    decrypt(in_rec);
-	    readv(in_rec,town_seed);
+	    ReadStr(in_rec,town_seed);
 	    for i1 := 1 to max_stores do
 	      with store[i1] do
 		begin
 		  readln(f1,in_rec);
 		  decrypt(in_rec);
-		  readv(in_rec,i2);
+		  ReadStr(in_rec,i2);
 		  store_ctr := i2;
 		{ If not current version then re-outfit the stores      }
 		  if (dun_flag) then
@@ -790,37 +790,37 @@
 		      begin
 			readln(f1,in_rec);
 			decrypt(in_rec);
-			readv(in_rec,store_inven[i3].scost);
+			ReadStr(in_rec,store_inven[i3].scost);
 			readln(f1,in_rec);
 			decrypt(in_rec);
-			readv(in_rec,tchar,name);
+			ReadStr(in_rec,tchar,name);
 			readln(f1,in_rec);
 			decrypt(in_rec);
-			readv(in_rec,damage);
+			ReadStr(in_rec,damage);
 			readln(f1,in_rec);
 			decrypt(in_rec);
-			readv(in_rec,tval,subval,weight,number,tohit,todam,
+			ReadStr(in_rec,tval,subval,weight,number,tohit,todam,
 				ac,toac,p1,flags,level,cost);
 		      end;
 		  readln(f1,in_rec);
 		  decrypt(in_rec);
-		  readv(in_rec,owner,insult_cur,store_open);
+		  ReadStr(in_rec,owner,insult_cur,store_open);
 		end;
 	    store_maint;
 	  end;
 
-	close(f1,error:=continue);
+	close(f1);
 	open (f1,file_name:=fnam,
 		record_length:=1024,history:=old,disposition:=delete,
 		error:=continue);
-	close(f1,error:=continue);
+	close(f1);
 	seed := get_seed;
 	get_char := dun_flag;
       end;
 
 
 	{ Wizard command for restoring character		-RAK-	}
-[psect(save$code)] procedure restore_char;
+procedure restore_char;
       var
 	i1                                      : integer;
 	fnam                                    : vtype;
@@ -836,7 +836,7 @@
 	  begin
 	    priv_switch(1);
 	    open (f1,file_name:=fnam,
-		record_length:=1024,history:=old,error:=continue);
+		record_length:=1024,history:=old);
 	    if (status(f1) <> 0) then
 	      msg_print('Error Opening> '+fnam)
 	    else
@@ -844,12 +844,12 @@
 		flag := true;
 		open (f2,file_name:=moria_mas,
 			access_method:=keyed,organization:=indexed,
-			history:=old,sharing:=readwrite,error:=continue);
+			history:=old,sharing:=readwrite);
 		if (status(f2) <> 0) then
 		  begin
 		    open (f2,file_name:=moria_mas,
 			access_method:=keyed,organization:=indexed,
-			history:=new,sharing:=readwrite,error:=continue);
+			history:=new,sharing:=readwrite);
 		    if (status(f2) <> 0) then
 		      begin
 			msg_print('MASTER could not be opened.');
@@ -858,8 +858,8 @@
 		  end;
 		if (flag) then
 		  begin
-		    reset(f1,error:=continue);
-		    readln(f1,in_rec,error:=continue);
+		    reset(f1);
+		    readln(f1,in_rec);
 		    seed := encrypt_seed2;
 		    decrypt(in_rec);
 		    temp := substr(in_rec,14,70);
@@ -867,17 +867,17 @@
 		    coder(temp);
 		    for i1 := 1 to 70 do
 		      key_rec.file_id[i1] := temp[i1];
-		    findk(f2,0,temp_id,eql,error:=continue);
-		    delete(f2,error:=continue);
+		    findk(f2,0,temp_id,eql);
+		    delete(f2);
 		    f2^ := key_rec;
-		    put(f2,error:=continue);
+		    put(f2);
 		    if (status(f2) = 0) then
 		      msg_print('Character restored...')
 		    else
 		      msg_print('Could not write ID in MASTER.');
 		  end;
-		close(f1,error:=continue);
-		close(f2,error:=continue);
+		close(f1);
+		close(f2);
 	      end;
 	    seed := get_seed;
 	    priv_switch(0);
