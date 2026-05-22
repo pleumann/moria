@@ -1,69 +1,69 @@
 var
-	player_max_exp			: [psect(player_data)]
+	player_max_exp			: 
 					  integer;	{ Max exp possible    }
-	seed				: [psect(player_data),global]
+	seed				: 
 					  unsigned;	{ Contains seed #     }
-	randes_seed			: [psect(setup_data)]
+	randes_seed			: 
 					  unsigned;	{ For encoding colors }
-	town_seed			: [psect(generate_data)]
+	town_seed			: 
 					  unsigned;	{ Seed for town genera}
-	channel				: [psect(io_data),global]
+	channel				: 
 					  integer;	{ I/O channel #       }
-	io_bin_pause			: [psect(io_data)]
+	io_bin_pause			: 
 					  quad_type;	{ I/O pause time      }
-	cur_height,cur_width		: [psect(player_data)]
+	cur_height,cur_width		: 
 					  integer;	{ Cur dungeon size    }
-	dun_level			: [psect(player_data)]
+	dun_level			: 
 					  integer;	{ Cur dungeon level   }
-	missle_ctr			: [psect(player_data)]
+	missle_ctr			: 
 					  integer;	{ Counter for missles }
-	msg_line			: [psect(player_data)]
+	msg_line			: 
 					  integer;	{ Contains message txt}
-	msg_flag			: [psect(player_data)]
+	msg_flag			: 
 					  boolean;	{ Set with first msg  }
-	old_msg				: [psect(player_data)]
+	old_msg				: 
 					  vtype;	{ Last message	      }
-	generate			: [psect(setup_data)]
+	generate			: 
 					  boolean;	{ Generate next level }
-	death				: [psect(player_data)]
+	death				: 
 					  boolean;	{ True if died	      }
-	died_from			: [psect(player_data)]
+	died_from			: 
 					  vtype;	{ What killed him     }
-	find_flag			: [psect(player_data)]
+	find_flag			: 
 					  boolean;	{ Used in MORIA	      }
-	reset_flag			: [psect(player_data)]
+	reset_flag			: 
 					  boolean;	{ Used in MORIA	      }
-	cave_flag			: [psect(player_data)]
+	cave_flag			: 
 					  boolean;	{ Used in GET_PANEL   }
-	light_flag			: [psect(player_data)]
+	light_flag			: 
 					  boolean;	{ Used in MOVE_LIGHT  }
-	redraw				: [psect(player_data)]
+	redraw				: 
 					  boolean;	{ For redraw screen   }
-	stat_column			: [psect(player_data)]
+	stat_column			: 
 					  integer;	{ Column for stats    }
-	print_stat			: [psect(player_data)]
+	print_stat			: 
 					  unsigned;	{ Flag for stats      }
-	turn				: [psect(player_data)]
+	turn				: 
 					  integer;	{ Cur trun of game    }
-	wizard1				: [psect(player_data)]
+	wizard1				: 
 					  boolean;	{ Wizard flag	      }
-	wizard2				: [psect(player_data)]
+	wizard2				: 
 					  boolean;	{ Wizard flag	      }
-	used_line			: [psect(player_data)]
+	used_line			: 
 					  array [2..23] of boolean;
-	password1			: [psect(setup_data)]
+	password1			: 
 					  packed array [1..12] of char;
-	password2			: [psect(setup_data)]
+	password2			: 
 					  packed array [1..12] of char;
-	wdata				: [psect(setup_data)]
+	wdata				: 
 					  array [1..2,0..12] of unsigned;
-	days				: [psect(setup_data)]
+	days				: 
 					  array [1..7] of vtype;
-	closing_flag			: [psect(player_data)]
+	closing_flag			: 
 					  integer;	{ Used for closing   }
 
 	{ Bit testing array						}
-	bit_array			: [psect(player_data)]
+	bit_array			: 
 					  array [1..32] of unsigned;
 
 	{ External file names; are all located in directory with image	}
@@ -82,7 +82,7 @@ var
 	panel_col_prt,panel_row_prt	: integer;
 
 	{  Following are all floor definitions				}
-	cave				: [psect(moria_data)]
+	cave				: 
 					  array [1..max_height] of row_floor;
 	blank_floor			: cave_type;
 	dopen_floor			: floor_type;
@@ -106,49 +106,49 @@ var
 
 	{ Following are player variables				}
 	py			: player_type;
-	player_title		: [psect(player_data)]
+	player_title		: 
 				  array [1..max_class] of
 				  array [1..max_player_level] of btype;
-	player_exp		: [psect(player_data)]
+	player_exp		: 
 				  array [1..max_player_level] of integer;
-	acc_exp			: [psect(player_data)]
+	acc_exp			: 
 				  real;	{ Accumulator for fractional exp}
-	bare_hands		: [psect(player_data)]
+	bare_hands		: 
 				  dtype;
 	char_row		: integer;
 	char_col		: integer;
 	com_val			: integer;
 	pclass			: integer;
 	sex_type		: vtype;
-	race			: [psect(create_data)]
+	race			: 
 				  array [1..max_races] of race_type;
-	background		: [psect(create_data)]
+	background		: 
 				  array [1..max_background] of background_type;
-	rgold_adj		: [psect(store_data)]
+	rgold_adj		: 
 				  array [1..max_races] of
 				  array [1..max_races] of real;
-	class			: [psect(create_data)]
+	class			: 
 				  array [1..max_class] of class_type;
-	magic_spell		: [psect(player_data)]
+	magic_spell		: 
 				  array [1..max_class] of 
 				  array [1..31] of spell_type;
 	mush			: treasure_type;
-	player_init		: [psect(create_data)]
+	player_init		: 
 				  array [1..max_class] of
 				  array [1..5] of byteint;
 	total_winner		: boolean;
 
 	{ Following are store definitions				}
-	owners			: [psect(store_data)]
+	owners			: 
 				  array [1..max_owners] of owner_type;
-	store			: [psect(store_data)]
+	store			: 
 				  array [1..max_stores] of store_type;
-	store_door		: [psect(generate_data)]
+	store_door		: 
 				  array [1..max_stores] of treasure_type;
-	store_choice		: [psect(store_data)]
+	store_choice		: 
 				  array [1..max_stores] of 
 				  array [1..store_choices] of integer;
-	store_buy		: [psect(store_data)]
+	store_buy		: 
 				  array [1..max_stores] of obj_set;
 
 	{ Following are treasure arrays	and variables			}
@@ -167,76 +167,76 @@ var
 	inventory_init		: 
 				  array [1..inven_init_max] of treasure_type;
 	blank_treasure		: treasure_type;
-	inven_ctr		: [psect(player_data)]
+	inven_ctr		: 
 				  integer;	{ Total different obj's	}
-	inven_weight		: [psect(player_data)]
+	inven_weight		: 
 				  integer;	{ Cur carried weight	}
-	equip_ctr		: [psect(player_data)]
+	equip_ctr		: 
 				  integer;	{ Cur equipment ctr	}
-	tcptr			: [psect(moria_data)]
+	tcptr			: 
 				  integer;	{ Cur treasure heap ptr	}
 
 	{ Following are feature objects defined for dungeon		}
-	trap_lista		: [psect(generate_data)]
+	trap_lista		: 
 				  array [1..max_trapa]   of treasure_type;
-	trap_listb		: [psect(generate_data)]
+	trap_listb		: 
 				  array [1..max_trapb]   of treasure_type;
-	scare_monster		: [psect(generate_data)]
+	scare_monster		: 
 				  treasure_type;	{ Special trap	}
-	rubble			: [psect(generate_data)]
+	rubble			: 
 				  treasure_type;
-	door_list		: [psect(generate_data)]
+	door_list		: 
 				  array [1..3]		 of treasure_type;
-	up_stair		: [psect(generate_data)]
+	up_stair		: 
 				  treasure_type;
-	down_stair		: [psect(generate_data)]
+	down_stair		: 
 				  treasure_type;
 
 	{ Following are creature arrays and variables			}
-	c_list		: [psect(moria_data)]
+	c_list		: 
 			  array [1..max_creatures] of creature_type;
-	m_list		: [psect(moria_data)]
+	m_list		: 
 			  array [1..max_malloc]    of monster_type;
-	m_level		: [psect(generate_data)]
+	m_level		: 
 			  array [0..max_mons_level] of integer;
-	blank_monster	: [psect(generate_data)]
+	blank_monster	: 
 			  monster_type;	{ Blank monster values	}
-	muptr		: [psect(generate_data)]
+	muptr		: 
 			  integer;	{ Cur used monster ptr	}
-	mfptr		: [psect(generate_data)]
+	mfptr		: 
 			  integer;	{ Cur free monster ptr	}
-	mon_tot_mult	: [psect(moria_data)]
+	mon_tot_mult	: 
 			  integer;	{ # of repro's of creature	}
 
 	{ Following are arrays for descriptive pieces			}
-	colors			: [psect(setup_data)]
+	colors			: 
 				  array [1..max_colors]	 of atype;
-	mushrooms		: [psect(setup_data)]
+	mushrooms		: 
 				  array [1..max_mush]    of atype;
-	woods			: [psect(setup_data)]
+	woods			: 
 				  array [1..max_woods]   of atype;
-	metals			: [psect(setup_data)]
+	metals			: 
 				  array [1..max_metals]  of atype;
-	rocks			: [psect(setup_data)]
+	rocks			: 
 				  array [1..max_rocks]   of atype;
-	amulets			: [psect(setup_data)]
+	amulets			: 
 				  array [1..max_amulets] of atype;
-	syllables		: [psect(setup_data)]
+	syllables		: 
 				  array [1..max_syllables] of dtype;
-	vowel_set		: [psect(moria_data)]
+	vowel_set		: 
 				  char_set;
 
 	{ Following are variables for the Save Character Routines	}
-	finam			: [psect(save_data)]
+	finam			: 
 				  vtype;
-	key_rec			: [psect(save_data)]
+	key_rec			: 
 				  key_type;
 
 	{ Cursor variables, used for cursor positioning			}
-	cursor_r	: [psect(io_data),global]
+	cursor_r	: 
 			  array [1..24] of string[10];
 	curlen_r	: integer;
-	cursor_c	: [psect(io_data),global]
+	cursor_c	: 
 			  array [1..80] of string[10];
 	curlen_c	: integer;
 	cursor_l	: integer;

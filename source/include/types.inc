@@ -13,7 +13,7 @@
 	dtype		= string[5];
 	etype		= string[34];
 	mtype		= string[190];
-	ntype		= string[1024];
+	ntype		= string[255];
 	ttype		= string[68];
 	vtype		= string[80];
 	stat_type	= packed array [1..6] of char;
