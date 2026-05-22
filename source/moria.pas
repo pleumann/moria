@@ -21,6 +21,9 @@
 {                                                                       }
 program moria(input,output);
 
+    { Compatibility definitions, stubs and wrappers }
+	{$i include/compat.inc}
+
 	{ Globals						-RAK-	}
 	{$i include/constants.inc}
 	{$i include/types.inc}
