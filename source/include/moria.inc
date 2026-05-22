@@ -796,7 +796,7 @@ procedure move_char(dir : integer);
 	{ I may have written the town level code, but I'm not exactly   }
 	{ proud of it.  Adding the stores required some real slucky     }
 	{ hooks which I have not had time to re-think.          -RAK-   }
-	{$i include/STORE2.INC}
+	{$i include/STORE2.inc}
 
 
 	{ Calculates current boundries				-RAK-	}
@@ -3547,20 +3547,20 @@ procedure move_char(dir : integer);
       end;
 
 	{ General spells and misc routines	}
-	{$i include/SPELLS.INC}
+	{$i include/spells.inc}
 	{ Wizard and debug routines             }
-	{$i include/WIZARD.INC}
+	{$i include/wizard.inc}
 	{ Creature movement and attacks         }
-	{$i include/CREATURE.INC}
+	{$i include/creature.inc}
 	{ Using objects                         }
-	{$i include/SCROLLS.INC}
-	{$i include/POTIONS.INC}
-	{$i include/EAT.INC}
-	{$i include/WANDS.INC}
-	{$i include/STAFFS.INC}
+	{$i include/scrolls.inc}
+	{$i include/potions.inc}
+	{$i include/eat.inc}
+	{$i include/wands.inc}
+	{$i include/staffs.inc}
 	{ Spell casting                         }
-	{$i include/MAGIC.INC}
-	{$i include/PRAYER.INC}
+	{$i include/magic.inc}
+	{$i include/prayer.inc}
 
 	{ Main procedure for dungeon... 			-RAK-	}
 	{ Note: There is a lot of prelinimary magic going on here at first}

@@ -22,23 +22,23 @@
 program moria(input,output);
 
 	{ Globals						-RAK-	}
-	{$i include/CONSTANTS.INC}
-	{$i include/TYPES.INC}
-	{$i include/VARIABLES.INC}
-	{$i include/VALUES.INC}
+	{$i include/constants.inc}
+	{$i include/types.inc}
+	{$i include/variables.inc}
+	{$i include/values.inc}
 
 	{ Libraries of routines 				-RAK-	}
-	{$i include/IO.INC}
-	{$i include/MISC.INC}
-	{$i include/DEATH.INC}
-	{$i include/HELP.INC}
-	{$i include/DESC.INC}
-	{$i include/FILES.INC}
-	{$i include/STORE1.INC}
-	{$i include/SAVE.INC}
-	{$i include/CREATE.INC}
-	{$i include/GENERATE.INC}
-	{$i include/MORIA.INC}
+	{$i include/io.inc}
+	{$i include/misc.inc}
+	{$i include/death.inc}
+	{$i include/help.inc}
+	{$i include/desc.inc}
+	{$i include/files.inc}
+	{$i include/store1.inc}
+	{$i include/save.inc}
+	{$i include/create.inc}
+	{$i include/generate.inc}
+	{$i include/moria.inc}
 
 
 	{ TERMDEF is external so that new terminals can be defined-RAK- }
